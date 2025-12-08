@@ -1,0 +1,55 @@
+{
+  "name": "EFFI Rental Dashboard",
+  "version": "1.0.2",
+  "short_name": "effiapp",
+  "start_url": "/",
+  "id": "effiapp",
+  "display": "standalone",
+  "description": "effiapp is a rental dashboard application for managing rental properties and tenants efficiently.",
+  "icons": [
+    {
+      "src": "manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "banner1.jpg",
+      "type": "image/jpg",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "banner2.jpg",
+      "type": "image/jpg",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "banner3.jpg",
+      "type": "image/jpg",
+      "sizes": "1080x1920",
+      "form_factor": "wide"
+    }
+  ]
+}
