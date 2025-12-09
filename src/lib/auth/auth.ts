@@ -7,14 +7,13 @@ import { eq } from "drizzle-orm"
 
 import { db } from "@/db/db"
 import { user as userTable } from "@/db/schemas"
-import { env } from "@/lib/env"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db(), {
     provider: "pg",
   }),
-  secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
 
   events: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +37,7 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieOptions: {
       httpOnly: true,
-      secure: env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
     },

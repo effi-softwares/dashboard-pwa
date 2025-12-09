@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth/auth"
 const publicRoutes = ["/auth/sign-in", "/not-found"]
 const authRoutes = ["/auth/sign-in"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const session = await auth.api.getSession({

@@ -7,7 +7,7 @@ export type AuthUser = AuthSession["user"]
 
 export async function getSession(): Promise<AuthSession | null> {
   const session = await auth.api.getSession({
-    headers: headers(),
+    headers: await headers(),
   })
   return session
 }

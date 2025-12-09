@@ -4,11 +4,13 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/auth"
 import { requireAdmin } from "@/lib/auth/get-session"
 
-export async function DELETE(_request: Request, { params }: { params: { userId: string } }) {
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ userId: string }> },
+) {
   try {
     const session = await requireAdmin()
-    const userId = params.userId
-
+    const { userId } = await params
     if (session.user.id === userId) {
       return NextResponse.json({ error: "Cannot delete your own account" }, { status: 400 })
     }

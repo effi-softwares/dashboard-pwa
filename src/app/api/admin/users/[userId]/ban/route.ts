@@ -4,10 +4,10 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/auth"
 import { requireAdmin } from "@/lib/auth/get-session"
 
-export async function POST(_request: Request, { params }: { params: { userId: string } }) {
+export async function POST(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     await requireAdmin()
-    const userId = params.userId
+    const { userId } = await params
 
     const result = await auth.api.banUser({
       headers: await headers(),
