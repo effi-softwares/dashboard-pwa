@@ -15,7 +15,7 @@ import {
   vehicleSelectionSchema,
 } from "@/components/new-rental/zod"
 import { Button } from "@/components/ui/button"
-import { Drawer, DrawerContent } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
 
 type NewRentalContextType = {
   isOpen: boolean
@@ -115,7 +115,7 @@ function NewRentalProvider({ children }: { children: React.ReactNode }) {
         <DrawerContent showHandle={false} className="h-dvh rounded-none!">
           <div className="max-w-7xl mx-auto flex flex-col h-full w-full">
             <div className="flex items-center justify-between py-4 mb-4 md:mb-0 border-b w-full">
-              <div className="">Title</div>
+              <DrawerTitle className="">Title</DrawerTitle>
               <Button className="cursor-pointer" variant="ghost" onClick={hideDrawer}>
                 <X />
               </Button>
