@@ -27,7 +27,7 @@ type VehicleDetailsFormProps = {
 function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
   return (
     <Form {...form}>
-      <div className="space-y-4">
+      <div className="space-y-4 my-4 drawer-container">
         <FormField
           control={form.control}
           name="make"

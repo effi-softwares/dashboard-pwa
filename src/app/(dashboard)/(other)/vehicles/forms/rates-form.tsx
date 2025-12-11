@@ -38,7 +38,7 @@ function RatesForm({ form }: RatesFormProps) {
 
   return (
     <Form {...form}>
-      <div className="space-y-4">
+      <div className="space-y-4 my-4 drawer-container">
         <div className="flex items-center justify-between mb-2">
           <FormLabel>Rates</FormLabel>
           <Button

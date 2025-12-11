@@ -178,3 +178,7 @@
     max-width: 70vw !important;
   }
 }
+
+.drawer-container {
+  @apply max-w-7xl mx-auto w-full px-8 xl:px-0;
+}
