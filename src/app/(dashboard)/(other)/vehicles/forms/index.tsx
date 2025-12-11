@@ -31,7 +31,7 @@ import VehicleDetailsForm from "./vehicle-details-form"
 
 type NewVehicleFormValues = VehicleFormValues & ratesFormValues
 
-function VehicleFormComponent() {
+function VehicleStepForm() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
@@ -188,4 +188,4 @@ function VehicleFormComponent() {
   )
 }
 
-export default VehicleFormComponent
+export default VehicleStepForm
