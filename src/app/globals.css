@@ -180,5 +180,17 @@
 }
 
 .drawer-container {
-  @apply max-w-7xl mx-auto w-full px-8 xl:px-0;
+  @apply max-w-5xl mx-auto w-full px-8 xl:px-0;
+}
+
+.fat-h {
+  @apply h-12;
+}
+
+.fat-rounded {
+  @apply rounded-xl;
+}
+
+.fat {
+  @apply h-12 rounded-xl;
 }

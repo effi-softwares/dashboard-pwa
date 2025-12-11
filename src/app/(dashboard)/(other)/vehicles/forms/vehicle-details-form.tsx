@@ -1,5 +1,14 @@
 import { UseFormReturn } from "react-hook-form"
 
+import { Car, Notebook, Search } from "lucide-react"
+
+import { FatInput } from "@/components/ui/fat-input"
+import {
+  FatInputGroup,
+  FatInputGroupAddon,
+  FatInputGroupButton,
+  FatInputGroupInput,
+} from "@/components/ui/fat-input-group"
 import {
   Form,
   FormControl,
@@ -8,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -27,7 +35,7 @@ type VehicleDetailsFormProps = {
 function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
   return (
     <Form {...form}>
-      <div className="space-y-4 my-4 drawer-container">
+      <div className="space-y-4 my-4 drawer-container grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name="make"
@@ -35,7 +43,12 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Make</FormLabel>
               <FormControl>
-                <Input {...field} type="text" placeholder="Enter make" />
+                <FatInputGroup>
+                  <FatInputGroupAddon>
+                    <Car />
+                  </FatInputGroupAddon>
+                  <FatInputGroupInput {...field} type="text" placeholder="Enter make" />
+                </FatInputGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -49,7 +62,15 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Model</FormLabel>
               <FormControl>
-                <Input {...field} type="text" placeholder="Enter model" />
+                <FatInputGroup>
+                  <FatInputGroupAddon>
+                    <Notebook />
+                  </FatInputGroupAddon>
+                  <FatInputGroupInput {...field} type="text" placeholder="Enter model" />
+                  <FatInputGroupButton>
+                    <Search />
+                  </FatInputGroupButton>
+                </FatInputGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -63,7 +84,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Year</FormLabel>
               <FormControl>
-                <Input {...field} type="number" placeholder="Enter year" />
+                <FatInput {...field} type="number" placeholder="Enter year" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -77,7 +98,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>VIN</FormLabel>
               <FormControl>
-                <Input {...field} type="text" placeholder="Enter VIN" />
+                <FatInput {...field} type="text" placeholder="Enter VIN" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,7 +112,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>License Plate</FormLabel>
               <FormControl>
-                <Input {...field} type="text" placeholder="Enter license plate" />
+                <FatInput {...field} type="text" placeholder="Enter license plate" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,7 +126,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Color</FormLabel>
               <FormControl>
-                <Input {...field} type="text" placeholder="Enter color" />
+                <FatInput {...field} type="text" placeholder="Enter color" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,7 +140,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Mileage</FormLabel>
               <FormControl>
-                <Input {...field} type="number" placeholder="Enter mileage" />
+                <FatInput {...field} type="number" placeholder="Enter mileage" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,7 +181,7 @@ function VehicleDetailsForm({ form }: VehicleDetailsFormProps) {
             <FormItem>
               <FormLabel>Seats</FormLabel>
               <FormControl>
-                <Input {...field} type="number" placeholder="Enter number of seats" />
+                <FatInput {...field} type="number" placeholder="Enter number of seats" />
               </FormControl>
               <FormMessage />
             </FormItem>

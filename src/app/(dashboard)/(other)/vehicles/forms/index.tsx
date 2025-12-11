@@ -15,6 +15,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { Progress } from "@/components/ui/progress"
 import { StepFormItem } from "@/types/step-form"
 
 import {
@@ -89,6 +90,14 @@ function VehicleStepForm() {
     return steps[currentStep - 1].formComponent
   }
 
+  const getNextButtonText = () => {
+    return steps[currentStep - 1].nextButtonText || "Continue"
+  }
+
+  const getPreviousButtonText = () => {
+    return steps[currentStep - 1].previousButtonText || "Go Back"
+  }
+
   const handleNext = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
@@ -136,18 +145,19 @@ function VehicleStepForm() {
         <Button>Add Vehicle</Button>
       </DrawerTrigger>
       <DrawerContent showHandle={false} className="h-dvh rounded-none!">
-        <DrawerHeader className="border-b px-0">
-          <div className="drawer-container">
-            <DrawerTitle className="md:text-left">
-              {currentStep === 1 ? "Add New Vehicle" : "Vehicle Pricing"}
-            </DrawerTitle>
+        <DrawerHeader className="px-0 pb-0">
+          <div className="drawer-container my-2">
+            <DrawerTitle className="md:text-left">Add New Vehicle</DrawerTitle>
             <p className="md:text-left text-muted-foreground">
               Step {currentStep} of {steps.length} - {steps[currentStep - 1].title}
             </p>
           </div>
+          <div className="h-1 bg-secondary">
+            <Progress className="h-1" value={(currentStep / steps.length) * 100} />
+          </div>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">{renderStepContent()}</div>
+        <div className="flex-1 overflow-y-auto px-4 py-2">{renderStepContent()}</div>
 
         <DrawerFooter className="my-2 px-0 border-t">
           <div className="flex justify-between drawer-container">
@@ -159,7 +169,7 @@ function VehicleStepForm() {
               className="flex items-center gap-2 bg-transparent"
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous
+              {getPreviousButtonText()}
             </Button>
 
             {currentStep < steps.length ? (
@@ -168,7 +178,7 @@ function VehicleStepForm() {
                 onClick={handleNext}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                Next
+                {getNextButtonText()}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             ) : (
