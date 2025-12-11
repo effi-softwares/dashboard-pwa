@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Car, ChevronLeft, ChevronRight, IdCard, Save } from "lucide-react"
+import { Car, ChevronLeft, ChevronRight, DollarSign, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +15,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+// If you have this type defined externally, keep the import.
+// Otherwise, I have defined it below for safety.
+import { StepFormItem } from "@/types/step-form"
 
 import {
   FuelType,
@@ -30,21 +33,19 @@ import VehicleDetailsForm from "./vehicle-details-form"
 
 type NewVehicleFormValues = VehicleFormValues & ratesFormValues
 
-const steps = [
-  { id: 1, title: "Vehicle Details", icon: Car },
-  { id: 2, title: "Rates", icon: IdCard },
-]
-
 function VehicleFormComponent() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
 
+  // 1. Setup Vehicle Form
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
+    mode: "onChange", // Useful to see errors immediately
     defaultValues: {
       make: formData.make || "",
       model: formData.model || "",
+      // Ensure this is a number in your Zod schema (z.coerce.number())
       year: formData.year || new Date().getFullYear(),
       vin: formData.vin || "",
       licensePlate: formData.licensePlate || "",
@@ -57,39 +58,47 @@ function VehicleFormComponent() {
     },
   })
 
+  // 2. Setup Rates Form
   const ratesForm = useForm<ratesFormValues>({
     resolver: zodResolver(ratesSchema),
+    mode: "onChange",
     defaultValues: {
       rates: formData.rates || [],
     },
   })
 
+  // 3. Define Steps
+  const steps = useMemo<StepFormItem[]>(() => {
+    return [
+      {
+        title: "Vehicle Info",
+        icon: Car,
+        nextButtonText: "Continue to Details",
+        form: vehicleForm,
+        formComponent: <VehicleDetailsForm form={vehicleForm} />,
+      },
+      {
+        title: "Pricing",
+        icon: DollarSign,
+        nextButtonText: "Review Vehicle",
+        form: ratesForm,
+        formComponent: <RatesForm form={ratesForm} />,
+      },
+    ]
+  }, [ratesForm, vehicleForm])
+
   const getCurrentForm = () => {
-    switch (currentStep) {
-      case 1:
-        return vehicleForm
-      case 2:
-        return ratesForm
-      default:
-        return vehicleForm
-    }
+    return steps[currentStep - 1].form
   }
 
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return <VehicleDetailsForm form={vehicleForm} />
-      case 2:
-        return <RatesForm form={ratesForm} />
-      default:
-        return <div>Vehicle Details Form</div>
-    }
+    return steps[currentStep - 1].formComponent
   }
 
+  // 4. Handle Next Click
   const handleNext = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
-    console.log(isValid)
 
     if (isValid) {
       const data = currentForm.getValues()
@@ -98,11 +107,16 @@ function VehicleFormComponent() {
       if (currentStep < steps.length) {
         setCurrentStep(prev => prev + 1)
       }
+    } else {
+      // DEBUG: This tells you WHY the step isn't moving
+      console.error("Validation failed:", currentForm.formState.errors)
     }
   }
 
   const handleBack = () => {
-    const currentData = getCurrentForm().getValues()
+    const currentForm = getCurrentForm()
+    // Optional: Save current progress before going back
+    const currentData = currentForm.getValues()
     setFormData(prev => ({ ...prev, ...currentData }))
 
     if (currentStep > 1) {
@@ -110,14 +124,20 @@ function VehicleFormComponent() {
     }
   }
 
+  // 5. Handle Final Save
   const handleSave = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
+
     if (isValid) {
-      const data = currentForm.getValues()
-      console.log("form data: ", data)
+      const currentStepData = currentForm.getValues()
+      // Merge all data
+      const finalData = { ...formData, ...currentStepData }
+
+      console.log("FINAL SUBMISSION DATA: ", finalData)
+      setIsOpen(false) // Close drawer on success
     } else {
-      console.log("form is invalid")
+      console.error("Final step validation failed:", currentForm.formState.errors)
     }
   }
 
@@ -129,12 +149,16 @@ function VehicleFormComponent() {
       <DrawerContent showHandle={false} className="h-dvh rounded-none!">
         <DrawerHeader className="border-b px-0">
           <div className="drawer-container">
-            <DrawerTitle className="md:text-left">Add New Vehicle</DrawerTitle>
-            <p className="md:text-left">Fill in the details to add a vehicle to your fleet</p>
+            <DrawerTitle className="md:text-left">
+              {currentStep === 1 ? "Add New Vehicle" : "Vehicle Pricing"}
+            </DrawerTitle>
+            <p className="md:text-left text-muted-foreground">
+              Step {currentStep} of {steps.length} - {steps[currentStep - 1].title}
+            </p>
           </div>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto">{renderStepContent()}</div>
+        <div className="flex-1 overflow-y-auto px-4 py-4">{renderStepContent()}</div>
 
         <DrawerFooter className="my-2 px-0 border-t">
           <div className="flex justify-between drawer-container">
@@ -149,7 +173,8 @@ function VehicleFormComponent() {
               Previous
             </Button>
 
-            {currentStep < 3 ? (
+            {/* FIXED LOGIC HERE: Use steps.length instead of hardcoded 3 */}
+            {currentStep < steps.length ? (
               <Button
                 type="button"
                 onClick={handleNext}
@@ -165,7 +190,7 @@ function VehicleFormComponent() {
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Save className="w-4 h-4" />
-                Save Employee
+                Save Vehicle
               </Button>
             )}
           </div>
