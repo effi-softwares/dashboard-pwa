@@ -15,8 +15,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-// If you have this type defined externally, keep the import.
-// Otherwise, I have defined it below for safety.
 import { StepFormItem } from "@/types/step-form"
 
 import {
@@ -38,14 +36,12 @@ function VehicleFormComponent() {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
 
-  // 1. Setup Vehicle Form
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
-    mode: "onChange", // Useful to see errors immediately
+    mode: "onChange",
     defaultValues: {
       make: formData.make || "",
       model: formData.model || "",
-      // Ensure this is a number in your Zod schema (z.coerce.number())
       year: formData.year || new Date().getFullYear(),
       vin: formData.vin || "",
       licensePlate: formData.licensePlate || "",
@@ -58,7 +54,6 @@ function VehicleFormComponent() {
     },
   })
 
-  // 2. Setup Rates Form
   const ratesForm = useForm<ratesFormValues>({
     resolver: zodResolver(ratesSchema),
     mode: "onChange",
@@ -67,7 +62,6 @@ function VehicleFormComponent() {
     },
   })
 
-  // 3. Define Steps
   const steps = useMemo<StepFormItem[]>(() => {
     return [
       {
@@ -95,7 +89,6 @@ function VehicleFormComponent() {
     return steps[currentStep - 1].formComponent
   }
 
-  // 4. Handle Next Click
   const handleNext = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
@@ -108,14 +101,12 @@ function VehicleFormComponent() {
         setCurrentStep(prev => prev + 1)
       }
     } else {
-      // DEBUG: This tells you WHY the step isn't moving
-      console.error("Validation failed:", currentForm.formState.errors)
+      console.log("Validation failed:", currentForm.formState.errors)
     }
   }
 
   const handleBack = () => {
     const currentForm = getCurrentForm()
-    // Optional: Save current progress before going back
     const currentData = currentForm.getValues()
     setFormData(prev => ({ ...prev, ...currentData }))
 
@@ -124,20 +115,18 @@ function VehicleFormComponent() {
     }
   }
 
-  // 5. Handle Final Save
   const handleSave = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
 
     if (isValid) {
       const currentStepData = currentForm.getValues()
-      // Merge all data
       const finalData = { ...formData, ...currentStepData }
 
       console.log("FINAL SUBMISSION DATA: ", finalData)
-      setIsOpen(false) // Close drawer on success
+      setIsOpen(false)
     } else {
-      console.error("Final step validation failed:", currentForm.formState.errors)
+      console.log("Final step validation failed:", currentForm.formState.errors)
     }
   }
 
@@ -173,7 +162,6 @@ function VehicleFormComponent() {
               Previous
             </Button>
 
-            {/* FIXED LOGIC HERE: Use steps.length instead of hardcoded 3 */}
             {currentStep < steps.length ? (
               <Button
                 type="button"
