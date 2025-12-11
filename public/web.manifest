@@ -1,6 +1,6 @@
 {
   "name": "EFFI Rental Dashboard",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "short_name": "effiapp",
   "start_url": "/",
   "id": "effiapp",

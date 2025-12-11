@@ -1,12 +1,21 @@
 "use client"
 
-import { createElement, useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Car, ChevronLeft, ChevronRight, IdCard, Loader2, Save } from "lucide-react"
+import { Car, ChevronLeft, ChevronRight, DollarSign, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { StepFormItem } from "@/types/step-form"
 
 import {
   FuelType,
@@ -20,23 +29,16 @@ import {
 import RatesForm from "./rates-form"
 import VehicleDetailsForm from "./vehicle-details-form"
 
-type NewVehicleFormProps = {
-  onClose?: () => void
-}
 type NewVehicleFormValues = VehicleFormValues & ratesFormValues
 
-const steps = [
-  { id: 1, title: "Vehicle Details", icon: Car },
-  { id: 2, title: "Rates", icon: IdCard },
-]
-
-function NewVehicleForm({ onClose }: NewVehicleFormProps) {
+function VehicleStepForm() {
+  const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
-  const [isLoading, setIsLoading] = useState(false)
 
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
+    mode: "onChange",
     defaultValues: {
       make: formData.make || "",
       model: formData.model || "",
@@ -54,37 +56,42 @@ function NewVehicleForm({ onClose }: NewVehicleFormProps) {
 
   const ratesForm = useForm<ratesFormValues>({
     resolver: zodResolver(ratesSchema),
+    mode: "onChange",
     defaultValues: {
       rates: formData.rates || [],
     },
   })
 
+  const steps = useMemo<StepFormItem[]>(() => {
+    return [
+      {
+        title: "Vehicle Info",
+        icon: Car,
+        nextButtonText: "Continue to Details",
+        form: vehicleForm,
+        formComponent: <VehicleDetailsForm form={vehicleForm} />,
+      },
+      {
+        title: "Pricing",
+        icon: DollarSign,
+        nextButtonText: "Review Vehicle",
+        form: ratesForm,
+        formComponent: <RatesForm form={ratesForm} />,
+      },
+    ]
+  }, [ratesForm, vehicleForm])
+
   const getCurrentForm = () => {
-    switch (currentStep) {
-      case 1:
-        return vehicleForm
-      case 2:
-        return ratesForm
-      default:
-        return vehicleForm
-    }
+    return steps[currentStep - 1].form
   }
 
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return <VehicleDetailsForm form={vehicleForm} />
-      case 2:
-        return <RatesForm form={ratesForm} />
-      default:
-        return <div>Vehicle Details Form</div>
-    }
+    return steps[currentStep - 1].formComponent
   }
 
   const handleNext = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
-    console.log(isValid)
 
     if (isValid) {
       const data = currentForm.getValues()
@@ -93,11 +100,14 @@ function NewVehicleForm({ onClose }: NewVehicleFormProps) {
       if (currentStep < steps.length) {
         setCurrentStep(prev => prev + 1)
       }
+    } else {
+      console.log("Validation failed:", currentForm.formState.errors)
     }
   }
 
   const handleBack = () => {
-    const currentData = getCurrentForm().getValues()
+    const currentForm = getCurrentForm()
+    const currentData = currentForm.getValues()
     setFormData(prev => ({ ...prev, ...currentData }))
 
     if (currentStep > 1) {
@@ -108,67 +118,74 @@ function NewVehicleForm({ onClose }: NewVehicleFormProps) {
   const handleSave = async () => {
     const currentForm = getCurrentForm()
     const isValid = await currentForm.trigger()
+
     if (isValid) {
-      const data = currentForm.getValues()
-      console.log("form data: ", data)
+      const currentStepData = currentForm.getValues()
+      const finalData = { ...formData, ...currentStepData }
+
+      console.log("FINAL SUBMISSION DATA: ", finalData)
+      setIsOpen(false)
     } else {
-      console.log("form is invalid")
+      console.log("Final step validation failed:", currentForm.formState.errors)
     }
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="shrink-0 px-8 py-6 pb-4 border-b">
-        <div className="flex items-center gap-2">
-          {createElement(steps[currentStep - 1].icon, { className: "w-5 h-5" })}
-          <h2 className="text-xl font-semibold">{steps[currentStep - 1].title}</h2>
-        </div>
-      </div>
+    <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={true}>
+      <DrawerTrigger asChild>
+        <Button>Add Vehicle</Button>
+      </DrawerTrigger>
+      <DrawerContent showHandle={false} className="h-dvh rounded-none!">
+        <DrawerHeader className="border-b px-0">
+          <div className="drawer-container">
+            <DrawerTitle className="md:text-left">
+              {currentStep === 1 ? "Add New Vehicle" : "Vehicle Pricing"}
+            </DrawerTitle>
+            <p className="md:text-left text-muted-foreground">
+              Step {currentStep} of {steps.length} - {steps[currentStep - 1].title}
+            </p>
+          </div>
+        </DrawerHeader>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-8 py-6">{renderStepContent()}</div>
-      </div>
+        <div className="flex-1 overflow-y-auto px-4 py-4">{renderStepContent()}</div>
 
-      <div className="shrink-0 px-8 py-6 mb-4 md:mb-0 border-t">
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            className="flex items-center gap-2 bg-transparent"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Previous
-          </Button>
-
-          {currentStep < 3 ? (
+        <DrawerFooter className="my-2 px-0 border-t">
+          <div className="flex justify-between drawer-container">
             <Button
               type="button"
-              onClick={handleNext}
-              className="flex items-center gap-2 cursor-pointer"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="flex items-center gap-2 bg-transparent"
             >
-              Next
-              <ChevronRight className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4" />
+              Previous
             </Button>
-          ) : (
-            <Button
-              type="button"
-              onClick={handleSave}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin w-4 h-4" />
-              ) : (
+
+            {currentStep < steps.length ? (
+              <Button
+                type="button"
+                onClick={handleNext}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleSave}
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <Save className="w-4 h-4" />
-              )}
-              Save Employee
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+                Save Vehicle
+              </Button>
+            )}
+          </div>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
-export default NewVehicleForm
+export default VehicleStepForm

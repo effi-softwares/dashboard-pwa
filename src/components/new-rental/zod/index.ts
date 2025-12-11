@@ -1,4 +1,4 @@
-import { email, z } from "zod"
+import { z } from "zod"
 
 export const vehicleSelectionSchema = z.object({
   vehicleId: z.string().min(1, "Vehicle is required"),
