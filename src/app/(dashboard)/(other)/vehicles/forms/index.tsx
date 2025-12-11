@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Car, ChevronLeft, ChevronRight, DollarSign, Save } from "lucide-react"
+import { Car, ChevronLeft, ChevronRight, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,49 +18,24 @@ import {
 import { Progress } from "@/components/ui/progress"
 import { StepFormItem } from "@/types/step-form"
 
-import {
-  FuelType,
-  ratesFormValues,
-  ratesSchema,
-  Transmission,
-  VehicleFormValues,
-  vehicleSchema,
-  VehicleStatus,
-} from "../zod"
-import RatesForm from "./rates-form"
-import VehicleDetailsForm from "./vehicle-details-form"
-
-type NewVehicleFormValues = VehicleFormValues & ratesFormValues
+import { Vehicle, VehicleIdentity, vehicleIdentitySchema } from "../zod"
+import IdentityForm from "./identity-form"
 
 function VehicleStepForm() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
+  const [formData, setFormData] = useState<Partial<Vehicle>>({})
 
-  const vehicleForm = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleSchema),
-    mode: "onChange",
+  const identityForm = useForm<VehicleIdentity>({
+    resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      make: formData.make || "",
-      model: formData.model || "",
-      year: formData.year || new Date().getFullYear(),
-      vin: formData.vin || "",
-      licensePlate: formData.licensePlate || "",
-      color: formData.color || "",
-      mileage: formData.mileage || 0,
-      transmission: formData.transmission || Transmission.AUTOMATIC,
-      seats: formData.seats || 1,
-      fuelType: formData.fuelType || FuelType.GASOLINE,
-      status: formData.status || VehicleStatus.AVAILABLE,
+      brand: formData.identity?.brand || "",
+      model: formData.identity?.model || "",
+      year: formData.identity?.year || new Date().getFullYear(),
+      vin: formData.identity?.vin || "",
+      licensePlate: formData.identity?.licensePlate || "",
     },
-  })
-
-  const ratesForm = useForm<ratesFormValues>({
-    resolver: zodResolver(ratesSchema),
-    mode: "onChange",
-    defaultValues: {
-      rates: formData.rates || [],
-    },
+    mode: "onBlur",
   })
 
   const steps = useMemo<StepFormItem[]>(() => {
@@ -69,18 +44,11 @@ function VehicleStepForm() {
         title: "Vehicle Info",
         icon: Car,
         nextButtonText: "Continue to Details",
-        form: vehicleForm,
-        formComponent: <VehicleDetailsForm form={vehicleForm} />,
-      },
-      {
-        title: "Pricing",
-        icon: DollarSign,
-        nextButtonText: "Review Vehicle",
-        form: ratesForm,
-        formComponent: <RatesForm form={ratesForm} />,
+        form: identityForm,
+        formComponent: <IdentityForm form={identityForm} />,
       },
     ]
-  }, [ratesForm, vehicleForm])
+  }, [identityForm])
 
   const getCurrentForm = () => {
     return steps[currentStep - 1].form
