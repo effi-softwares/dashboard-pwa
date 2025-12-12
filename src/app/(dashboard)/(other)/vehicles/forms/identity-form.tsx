@@ -16,10 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { VehicleIdentity } from "../zod"
+import { VehicleIdentityInput } from "../zod"
 
 type IdentityFomProps = {
-  form: UseFormReturn<VehicleIdentity>
+  form: UseFormReturn<VehicleIdentityInput>
 }
 
 function IdentityFom({ form }: IdentityFomProps) {

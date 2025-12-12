@@ -1,10 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, UseFormReturn } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Car, ChevronLeft, ChevronRight, Save } from "lucide-react"
+import { Car, ChevronLeft, ChevronRight, LucideIcon, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -16,17 +16,43 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Progress } from "@/components/ui/progress"
-import { StepFormItem } from "@/types/step-form"
 
-import { Vehicle, VehicleIdentity, vehicleIdentitySchema } from "../zod"
+import {
+  VehicleIdentityInput,
+  vehicleIdentitySchema,
+  VehicleInput,
+  VehicleOperationsInput,
+  vehicleOperationsSchema,
+  VehicleRatesInput,
+  vehicleRatesSchema,
+  VehicleSpecsInput,
+  vehicleSpecsSchema,
+} from "../zod"
 import IdentityForm from "./identity-form"
+import OperationsForm from "./operations-form"
+import RateForm from "./rate-form"
+import SpecForm from "./spec-form"
+
+export interface StepFormItem {
+  title: string
+  previousButtonText?: string
+  nextButtonText?: string
+  form:
+    | UseFormReturn<VehicleIdentityInput>
+    | UseFormReturn<VehicleSpecsInput>
+    | UseFormReturn<VehicleOperationsInput>
+    | UseFormReturn<VehicleRatesInput>
+  formComponent: React.ReactNode
+  icon: LucideIcon
+}
 
 function VehicleStepForm() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<Partial<Vehicle>>({})
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [formData, setFormData] = useState<Partial<VehicleInput>>({})
 
-  const identityForm = useForm<VehicleIdentity>({
+  const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
       brand: formData.identity?.brand || "",
@@ -38,8 +64,40 @@ function VehicleStepForm() {
     mode: "onBlur",
   })
 
-  const steps = useMemo<StepFormItem[]>(() => {
-    return [
+  const specsForm = useForm<VehicleSpecsInput>({
+    resolver: zodResolver(vehicleSpecsSchema),
+    defaultValues: {
+      color: formData.specs?.color,
+      transmission: formData.specs?.transmission,
+      fuelType: formData.specs?.fuelType,
+      seats: formData.specs?.seats,
+      doors: formData.specs?.doors,
+      baggageCapacity: formData.specs?.baggageCapacity,
+      features: formData.specs?.features,
+    },
+    mode: "onBlur",
+  })
+
+  const operationsForm = useForm<VehicleOperationsInput>({
+    resolver: zodResolver(vehicleOperationsSchema),
+    defaultValues: {
+      status: formData.operations?.status,
+      mileage: formData.operations?.mileage,
+      registrationExpiryDate: formData.operations?.registrationExpiryDate,
+      insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
+      insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
+    },
+    mode: "onBlur",
+  })
+
+  const ratesForm = useForm<VehicleRatesInput>({
+    resolver: zodResolver(vehicleRatesSchema),
+    defaultValues: formData.rates || [],
+    mode: "onBlur",
+  })
+
+  const steps = useMemo<StepFormItem[]>(
+    () => [
       {
         title: "Vehicle Info",
         icon: Car,
@@ -47,8 +105,33 @@ function VehicleStepForm() {
         form: identityForm,
         formComponent: <IdentityForm form={identityForm} />,
       },
-    ]
-  }, [identityForm])
+      {
+        title: "Specifications",
+        icon: Car,
+        previousButtonText: "Back to Info",
+        nextButtonText: "Continue to Operations",
+        form: specsForm,
+        formComponent: <SpecForm form={specsForm} />,
+      },
+      {
+        title: "Operations",
+        icon: Car,
+        previousButtonText: "Back to Details",
+        nextButtonText: "Continue to Rates",
+        form: operationsForm,
+        formComponent: <OperationsForm form={operationsForm} />,
+      },
+      {
+        title: "Rates & Financials",
+        icon: Car,
+        previousButtonText: "Back to Operations",
+        nextButtonText: "Save Vehicle",
+        form: ratesForm,
+        formComponent: <RateForm form={ratesForm} />,
+      },
+    ],
+    [identityForm, specsForm, operationsForm, ratesForm],
+  )
 
   const getCurrentForm = () => {
     return steps[currentStep - 1].form
@@ -67,26 +150,33 @@ function VehicleStepForm() {
   }
 
   const handleNext = async () => {
-    const currentForm = getCurrentForm()
-    const isValid = await currentForm.trigger()
+    // const currentForm = getCurrentForm()
+    // const isValid = await currentForm.trigger()
 
-    if (isValid) {
-      const data = currentForm.getValues()
-      setFormData(prev => ({ ...prev, ...data }))
+    // if (isValid) {
+    //   const data = currentForm.getValues()
+    //   setFormData(prev => ({ ...prev, ...data }))
 
-      if (currentStep < steps.length) {
-        setCurrentStep(prev => prev + 1)
-      }
-    } else {
-      console.log("Validation failed:", currentForm.formState.errors)
+    //   if (currentStep < steps.length) {
+    //     setCurrentStep(prev => prev + 1)
+    //   }
+    // } else {
+    //   console.log("Validation failed:", currentForm.formState.errors)
+    // }
+
+    if (currentStep < steps.length) {
+      setCurrentStep(prev => prev + 1)
     }
   }
 
   const handleBack = () => {
-    const currentForm = getCurrentForm()
-    const currentData = currentForm.getValues()
-    setFormData(prev => ({ ...prev, ...currentData }))
+    // const currentForm = getCurrentForm()
+    // const currentData = currentForm.getValues()
+    // setFormData(prev => ({ ...prev, ...currentData }))
 
+    // if (currentStep > 1) {
+    //   setCurrentStep(prev => prev - 1)
+    // }
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1)
     }
