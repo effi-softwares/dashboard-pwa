@@ -14,6 +14,8 @@ export const vehicleIdentitySchema = z.object({
     .max(new Date().getFullYear() + 1, "Year cannot be in the future"),
   vin: z.string().length(17, "VIN must be exactly 17 characters").or(z.string().min(5)),
   licensePlate: z.string().min(2, "License plate is required").toUpperCase(),
+  color: z.string().min(3, "Color is required"),
+  isBrandNew: z.boolean().default(false),
 })
 
 const vehicleFeaturesSchema = z.object({
@@ -24,9 +26,9 @@ const vehicleFeaturesSchema = z.object({
 })
 
 export const vehicleSpecsSchema = z.object({
-  color: z.string().min(3, "Color is required"),
   transmission: TransmissionEnum,
   fuelType: FuelTypeEnum,
+  odometerReading: z.number().min(0, "Odometer reading cannot be negative"),
   seats: z.number().min(1).max(60),
   doors: z.number().min(2).max(5),
   baggageCapacity: z.number().min(0, "Cannot be negative").describe("Number of large bags"),

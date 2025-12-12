@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Switch } from "@/components/ui/switch"
 
 import { VehicleIdentityInput } from "../zod"
 
@@ -109,6 +110,36 @@ function IdentityFom({ form }: IdentityFomProps) {
                   </FatInputGroupAddon>
                   <FatInputGroupInput {...field} type="text" placeholder="Enter License Plate" />
                 </FatInputGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="color"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Color</FormLabel>
+              <FormControl>
+                <FatInputGroup>
+                  <FatInputGroupInput {...field} type="text" placeholder="Enter color" />
+                </FatInputGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="isBrandNew"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Is Brand New</FormLabel>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

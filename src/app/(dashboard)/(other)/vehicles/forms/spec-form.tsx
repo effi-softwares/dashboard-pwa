@@ -3,6 +3,7 @@ import { UseFormReturn } from "react-hook-form"
 import { Battery, Droplet, Gauge, Hand, Leaf, Settings, Zap } from "lucide-react"
 
 import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
+import { Checkbox } from "@/components/ui/checkbox"
 import { FatInputGroup, FatInputGroupInput } from "@/components/ui/fat-input-group"
 import {
   Form,
@@ -12,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Label } from "@/components/ui/label"
 
 import { VehicleSpecsInput } from "../zod"
 
@@ -78,13 +80,13 @@ function SpecForm({ form }: SpecFormProps) {
       <div className="my-4 drawer-container grid grid-cols-1 md:grid-cols-2 gap-8">
         <FormField
           control={form.control}
-          name="color"
+          name="odometerReading"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Color</FormLabel>
+              <FormLabel>Odometer Reading</FormLabel>
               <FormControl>
                 <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter color" />
+                  <FatInputGroupInput {...field} type="text" placeholder="Enter odometer reading" />
                 </FatInputGroup>
               </FormControl>
               <FormMessage />
@@ -171,6 +173,90 @@ function SpecForm({ form }: SpecFormProps) {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="features.hasAC"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="flex items-start gap-3">
+                  <Checkbox id="terms-2" onCheckedChange={field.onChange} checked={field.value} />
+                  <div className="grid gap-2">
+                    <Label htmlFor="terms-2">Has A/C</Label>
+                    <p className="text-muted-foreground text-sm">
+                      Indicates if the vehicle is equipped with air conditioning.
+                    </p>
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="features.hasBluetooth"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="flex items-start gap-3">
+                  <Checkbox id="terms-2" onCheckedChange={field.onChange} checked={field.value} />
+                  <div className="grid gap-2">
+                    <Label htmlFor="terms-2">Has Bluetooth</Label>
+                    <p className="text-muted-foreground text-sm">
+                      Indicates if the vehicle is equipped with Bluetooth.
+                    </p>
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="features.hasNavigation"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="flex items-start gap-3">
+                  <Checkbox id="terms-2" onCheckedChange={field.onChange} checked={field.value} />
+                  <div className="grid gap-2">
+                    <Label htmlFor="terms-2">Has Navigation</Label>
+                    <p className="text-muted-foreground text-sm">
+                      Indicates if the vehicle is equipped with Navigation.
+                    </p>
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="features.isPetFriendly"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="flex items-start gap-3">
+                  <Checkbox id="terms-2" onCheckedChange={field.onChange} checked={field.value} />
+                  <div className="grid gap-2">
+                    <Label htmlFor="terms-2">Pet Friendly</Label>
+                    <p className="text-muted-foreground text-sm">
+                      Indicates if the vehicle allows pets.
+                    </p>
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </Form>
   )
