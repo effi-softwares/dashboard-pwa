@@ -58,28 +58,30 @@ const limitedMileageSchema = z.object({
   measureUnit: z.enum(["km", "miles"]).default("km"),
 })
 
-export const vehicleRatesSchema = z.array(
-  z
-    .object({
-      pricingModel: PricingModelEnum,
-      rate: z.number().min(0, "Rate must be non-negative"),
-      mileagePolicy: z.discriminatedUnion("mileageType", [
-        unlimitedMileageSchema,
-        limitedMileageSchema,
-      ]),
-      requiresDeposit: z.boolean().default(true),
-      depositAmount: z.number().min(0).optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (data.requiresDeposit && (!data.depositAmount || data.depositAmount <= 0)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Deposit amount is required when security deposit is enabled",
-          path: ["depositAmount"],
-        })
-      }
-    }),
-)
+export const vehicleRatesSchema = z.object({
+  rates: z.array(
+    z
+      .object({
+        pricingModel: PricingModelEnum,
+        rate: z.number().min(0, "Rate must be non-negative"),
+        mileagePolicy: z.discriminatedUnion("mileageType", [
+          unlimitedMileageSchema,
+          limitedMileageSchema,
+        ]),
+        requiresDeposit: z.boolean().default(true),
+        depositAmount: z.number().min(0).optional(),
+      })
+      .superRefine((data, ctx) => {
+        if (data.requiresDeposit && (!data.depositAmount || data.depositAmount <= 0)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Deposit amount is required when security deposit is enabled",
+            path: ["depositAmount"],
+          })
+        }
+      }),
+  ),
+})
 
 export const vehicleSchema = z.object({
   identity: vehicleIdentitySchema,

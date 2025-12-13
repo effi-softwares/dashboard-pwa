@@ -93,7 +93,9 @@ function VehicleStepForm() {
 
   const ratesForm = useForm<VehicleRatesInput>({
     resolver: zodResolver(vehicleRatesSchema),
-    defaultValues: formData.rates || [],
+    defaultValues: {
+      rates: [],
+    },
     mode: "onBlur",
   })
 
