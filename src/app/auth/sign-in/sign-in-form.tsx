@@ -43,11 +43,10 @@ export function SignInForm() {
         { ...data },
         {
           onError: error => {
-            toast.error("Sign in failed")
+            toast.error("Failed to sign in. Please check your credentials and try again.")
             console.error(error)
           },
           onSuccess: () => {
-            toast.success("Successfully signed in!")
             window.location.href = callbackUrl
           },
         },

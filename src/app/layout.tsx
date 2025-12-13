@@ -2,6 +2,8 @@ import React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter as FontSans } from "next/font/google"
 
+import { Toaster } from "sonner"
+
 import { cn } from "../lib/utils"
 import LayoutClient from "./layout-client"
 
@@ -46,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <LayoutClient>{children}</LayoutClient>
+        <Toaster position="top-center" expand visibleToasts={9} />
       </body>
     </html>
   )
