@@ -80,22 +80,6 @@ function SpecForm({ form }: SpecFormProps) {
       <div className="my-4 drawer-container grid grid-cols-1 md:grid-cols-2 gap-8">
         <FormField
           control={form.control}
-          name="odometerReading"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Odometer Reading</FormLabel>
-              <FormControl>
-                <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter odometer reading" />
-                </FatInputGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="seats"
           render={({ field }) => (
             <FormItem>

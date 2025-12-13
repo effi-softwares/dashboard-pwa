@@ -60,6 +60,8 @@ function VehicleStepForm() {
       year: formData.identity?.year || new Date().getFullYear(),
       vin: formData.identity?.vin || "",
       licensePlate: formData.identity?.licensePlate || "",
+      color: formData.identity?.color,
+      isBrandNew: formData.identity?.isBrandNew,
     },
     mode: "onBlur",
   })
@@ -67,7 +69,6 @@ function VehicleStepForm() {
   const specsForm = useForm<VehicleSpecsInput>({
     resolver: zodResolver(vehicleSpecsSchema),
     defaultValues: {
-      color: formData.specs?.color,
       transmission: formData.specs?.transmission,
       fuelType: formData.specs?.fuelType,
       seats: formData.specs?.seats,
