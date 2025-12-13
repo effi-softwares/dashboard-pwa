@@ -20,11 +20,5 @@
       }
     ],
     "simple-import-sort/exports": "error"
-  },
-  "overrides": [
-    {
-      "files": ["components/ui/**/*.{ts,tsx}"],
-      "rules": { "all": "off" }
-    }
-  ]
+  }
 }

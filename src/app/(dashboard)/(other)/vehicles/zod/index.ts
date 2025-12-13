@@ -1,70 +1,121 @@
 import { z } from "zod"
 
-export enum Transmission {
-  AUTOMATIC = "automatic",
-  MANUAL = "manual",
-}
+export const TransmissionEnum = z.enum(["Automatic", "Manual", "Semi-Automatic"])
+export const FuelTypeEnum = z.enum(["Petrol", "Diesel", "Electric", "Hybrid", "Hydrogen"])
+export const VehicleStatusEnum = z.enum(["Available", "Rented", "Maintenance", "Retired"])
+export const PricingModelEnum = z.enum(["Daily", "Weekly", "Monthly", "Distance-Based"])
 
-export enum FuelType {
-  GASOLINE = "gasoline",
-  DIESEL = "diesel",
-  ELECTRIC = "electric",
-  HYBRID = "hybrid",
-}
+export const vehicleIdentitySchema = z.object({
+  brand: z.string().min(2, "Brand is required (e.g. Toyota)"),
+  model: z.string().min(2, "Model is required (e.g. Corolla)"),
+  year: z
+    .number()
+    .min(1900, "Year must be 1900 or later")
+    .max(new Date().getFullYear() + 1, "Year cannot be in the future"),
+  vin: z.string().length(17, "VIN must be exactly 17 characters").or(z.string().min(5)),
+  licensePlate: z.string().min(2, "License plate is required").toUpperCase(),
+  color: z.string().min(3, "Color is required"),
+  isBrandNew: z.boolean().default(false),
+})
 
-export enum VehicleStatus {
-  AVAILABLE = "available",
-  RENTED = "rented",
-  MAINTENANCE = "maintenance",
-}
+const vehicleFeaturesSchema = z.object({
+  hasAC: z.boolean().default(true),
+  hasNavigation: z.boolean().default(false),
+  hasBluetooth: z.boolean().default(true),
+  isPetFriendly: z.boolean().default(false),
+})
 
-export enum RateType {
-  DAILY = "daily",
-  WEEKLY = "weekly",
-  MONTHLY = "monthly",
-}
+export const vehicleSpecsSchema = z.object({
+  transmission: TransmissionEnum,
+  fuelType: FuelTypeEnum,
+  odometerReading: z.number().min(0, "Odometer reading cannot be negative"),
+  seats: z.number().min(1).max(60),
+  doors: z.number().min(2).max(5),
+  baggageCapacity: z.number().min(0, "Cannot be negative").describe("Number of large bags"),
+  features: vehicleFeaturesSchema,
+})
+
+export const vehicleOperationsSchema = z.object({
+  status: VehicleStatusEnum.default("Available"),
+  mileage: z.number().min(0, "Mileage cannot be negative"),
+  registrationExpiryDate: z.date({
+    message: "Registration expiry date is required",
+  }),
+  insuranceExpiryDate: z.date({
+    message: "Insurance expiry date is required",
+  }),
+  insurancePolicyNumber: z.string().min(1, "Policy number is required"),
+})
+
+const unlimitedMileageSchema = z.object({
+  mileageType: z.literal("Unlimited"),
+})
+
+const limitedMileageSchema = z.object({
+  mileageType: z.literal("Limited"),
+  limitPerDay: z.number().min(1, "Daily limit must be positive (e.g., 200km)"),
+  overageFeePerUnit: z.number().min(0, "Cost per extra km is required"),
+  measureUnit: z.enum(["km", "miles"]).default("km"),
+})
+
+export const vehicleRatesSchema = z.array(
+  z
+    .object({
+      pricingModel: PricingModelEnum,
+      rate: z.number().min(0, "Rate must be non-negative"),
+      mileagePolicy: z.discriminatedUnion("mileageType", [
+        unlimitedMileageSchema,
+        limitedMileageSchema,
+      ]),
+      requiresDeposit: z.boolean().default(true),
+      depositAmount: z.number().min(0).optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.requiresDeposit && (!data.depositAmount || data.depositAmount <= 0)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Deposit amount is required when security deposit is enabled",
+          path: ["depositAmount"],
+        })
+      }
+    }),
+)
 
 export const vehicleSchema = z.object({
-  make: z.string().min(1, "Make is required"),
-  model: z.string().min(1, "Model is required"),
-  year: z
-    .number({ message: "Year must be a number" })
-    .min(1886, "Year must be 1886 or later")
-    .max(new Date().getFullYear() + 1, `Year cannot be later than ${new Date().getFullYear() + 1}`),
-  vin: z.string().min(1, "VIN is required"),
-  licensePlate: z.string().min(1, "License plate is required"),
-  color: z.string().min(1, "Color is required"),
-  mileage: z.number({ message: "Mileage must be a number" }).min(0, "Mileage cannot be negative"),
-  transmission: z.enum(Transmission, {
-    message: "Transmission is required",
-  }),
-  seats: z.number({ message: "Seats must be a number" }).min(1, "There must be at least 1 seat"),
-  fuelType: z.enum(FuelType, {
-    message: "Fuel type is required",
-  }),
-  status: z.enum(VehicleStatus, {
-    message: "Status is required",
-  }),
+  identity: vehicleIdentitySchema,
+  specs: vehicleSpecsSchema,
+  operations: vehicleOperationsSchema,
+  rates: vehicleRatesSchema,
 })
 
-export type VehicleFormValues = z.infer<typeof vehicleSchema>
+export type Transmission = z.infer<typeof TransmissionEnum>
+export type TransmissionInput = z.input<typeof TransmissionEnum>
 
-export const ratesSchema = z.object({
-  rates: z.array(
-    z.object({
-      rateType: z.enum(RateType, { message: "Rate type is required" }),
-      amount: z.number({ message: "Amount must be a number" }).min(0, "Amount cannot be negative"),
-      limitedMillage: z.boolean().optional(),
-      millageLimit: z
-        .number({ message: "Millage limit must be a number" })
-        .min(0, "Millage limit cannot be negative")
-        .optional(),
-      extraMillageFee: z
-        .number({ message: "Extra millage fee must be a number" })
-        .min(0, "Extra millage fee cannot be negative")
-        .optional(),
-    }),
-  ),
-})
+export type FuelType = z.infer<typeof FuelTypeEnum>
+export type FuelTypeInput = z.input<typeof FuelTypeEnum>
 
-export type ratesFormValues = z.infer<typeof ratesSchema>
+export type VehicleStatus = z.infer<typeof VehicleStatusEnum>
+export type VehicleStatusInput = z.input<typeof VehicleStatusEnum>
+
+export type PricingModel = z.infer<typeof PricingModelEnum>
+export type PricingModelInput = z.input<typeof PricingModelEnum>
+
+export type VehicleIdentity = z.infer<typeof vehicleIdentitySchema>
+export type VehicleIdentityInput = z.input<typeof vehicleIdentitySchema>
+
+export type VehicleFeatures = z.infer<typeof vehicleFeaturesSchema>
+export type VehicleFeaturesInput = z.input<typeof vehicleFeaturesSchema>
+
+export type VehicleSpecs = z.infer<typeof vehicleSpecsSchema>
+export type VehicleSpecsInput = z.input<typeof vehicleSpecsSchema>
+
+export type VehicleOperations = z.infer<typeof vehicleOperationsSchema>
+export type VehicleOperationsInput = z.input<typeof vehicleOperationsSchema>
+
+export type VehicleRates = z.infer<typeof vehicleRatesSchema>
+export type VehicleRatesInput = z.input<typeof vehicleRatesSchema>
+
+export type Vehicle = z.infer<typeof vehicleSchema>
+export type VehicleInput = z.input<typeof vehicleSchema>
+
+export type FormDataType = Partial<VehicleInput>

@@ -1,10 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, UseFormReturn } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Car, ChevronLeft, ChevronRight, DollarSign, Save } from "lucide-react"
+import { Car, ChevronLeft, ChevronRight, LucideIcon, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,71 +15,124 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { StepFormItem } from "@/types/step-form"
+import { Progress } from "@/components/ui/progress"
 
 import {
-  FuelType,
-  ratesFormValues,
-  ratesSchema,
-  Transmission,
-  VehicleFormValues,
-  vehicleSchema,
-  VehicleStatus,
+  VehicleIdentityInput,
+  vehicleIdentitySchema,
+  VehicleInput,
+  VehicleOperationsInput,
+  vehicleOperationsSchema,
+  VehicleRatesInput,
+  vehicleRatesSchema,
+  VehicleSpecsInput,
+  vehicleSpecsSchema,
 } from "../zod"
-import RatesForm from "./rates-form"
-import VehicleDetailsForm from "./vehicle-details-form"
+import IdentityForm from "./identity-form"
+import OperationsForm from "./operations-form"
+import RateForm from "./rate-form"
+import SpecForm from "./spec-form"
 
-type NewVehicleFormValues = VehicleFormValues & ratesFormValues
+export interface StepFormItem {
+  title: string
+  previousButtonText?: string
+  nextButtonText?: string
+  form:
+    | UseFormReturn<VehicleIdentityInput>
+    | UseFormReturn<VehicleSpecsInput>
+    | UseFormReturn<VehicleOperationsInput>
+    | UseFormReturn<VehicleRatesInput>
+  formComponent: React.ReactNode
+  icon: LucideIcon
+}
 
 function VehicleStepForm() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<Partial<NewVehicleFormValues>>({})
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [formData, setFormData] = useState<Partial<VehicleInput>>({})
 
-  const vehicleForm = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleSchema),
-    mode: "onChange",
+  const identityForm = useForm<VehicleIdentityInput>({
+    resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      make: formData.make || "",
-      model: formData.model || "",
-      year: formData.year || new Date().getFullYear(),
-      vin: formData.vin || "",
-      licensePlate: formData.licensePlate || "",
-      color: formData.color || "",
-      mileage: formData.mileage || 0,
-      transmission: formData.transmission || Transmission.AUTOMATIC,
-      seats: formData.seats || 1,
-      fuelType: formData.fuelType || FuelType.GASOLINE,
-      status: formData.status || VehicleStatus.AVAILABLE,
+      brand: formData.identity?.brand || "",
+      model: formData.identity?.model || "",
+      year: formData.identity?.year || new Date().getFullYear(),
+      vin: formData.identity?.vin || "",
+      licensePlate: formData.identity?.licensePlate || "",
+      color: formData.identity?.color,
+      isBrandNew: formData.identity?.isBrandNew,
     },
+    mode: "onBlur",
   })
 
-  const ratesForm = useForm<ratesFormValues>({
-    resolver: zodResolver(ratesSchema),
-    mode: "onChange",
+  const specsForm = useForm<VehicleSpecsInput>({
+    resolver: zodResolver(vehicleSpecsSchema),
     defaultValues: {
-      rates: formData.rates || [],
+      transmission: formData.specs?.transmission,
+      fuelType: formData.specs?.fuelType,
+      seats: formData.specs?.seats,
+      doors: formData.specs?.doors,
+      baggageCapacity: formData.specs?.baggageCapacity,
+      features: formData.specs?.features,
     },
+    mode: "onBlur",
   })
 
-  const steps = useMemo<StepFormItem[]>(() => {
-    return [
+  const operationsForm = useForm<VehicleOperationsInput>({
+    resolver: zodResolver(vehicleOperationsSchema),
+    defaultValues: {
+      status: formData.operations?.status,
+      mileage: formData.operations?.mileage,
+      registrationExpiryDate: formData.operations?.registrationExpiryDate,
+      insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
+      insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
+    },
+    mode: "onBlur",
+  })
+
+  const ratesForm = useForm<VehicleRatesInput>({
+    resolver: zodResolver(vehicleRatesSchema),
+    defaultValues: formData.rates || [],
+    mode: "onBlur",
+  })
+
+  const steps = useMemo<StepFormItem[]>(
+    () => [
       {
         title: "Vehicle Info",
         icon: Car,
         nextButtonText: "Continue to Details",
-        form: vehicleForm,
-        formComponent: <VehicleDetailsForm form={vehicleForm} />,
+        form: identityForm,
+        formComponent: <IdentityForm form={identityForm} />,
       },
       {
-        title: "Pricing",
-        icon: DollarSign,
-        nextButtonText: "Review Vehicle",
-        form: ratesForm,
-        formComponent: <RatesForm form={ratesForm} />,
+        title: "Specifications",
+        icon: Car,
+        previousButtonText: "Back to Info",
+        nextButtonText: "Continue to Operations",
+        form: specsForm,
+        formComponent: <SpecForm form={specsForm} />,
       },
-    ]
-  }, [ratesForm, vehicleForm])
+      {
+        title: "Operations",
+        icon: Car,
+        previousButtonText: "Back to Details",
+        nextButtonText: "Continue to Rates",
+        form: operationsForm,
+        formComponent: <OperationsForm form={operationsForm} />,
+      },
+      {
+        title: "Rates & Financials",
+        icon: Car,
+        previousButtonText: "Back to Operations",
+        nextButtonText: "Save Vehicle",
+        form: ratesForm,
+        formComponent: <RateForm form={ratesForm} />,
+      },
+    ],
+    [identityForm, specsForm, operationsForm, ratesForm],
+  )
 
   const getCurrentForm = () => {
     return steps[currentStep - 1].form
@@ -89,27 +142,42 @@ function VehicleStepForm() {
     return steps[currentStep - 1].formComponent
   }
 
+  const getNextButtonText = () => {
+    return steps[currentStep - 1].nextButtonText || "Continue"
+  }
+
+  const getPreviousButtonText = () => {
+    return steps[currentStep - 1].previousButtonText || "Go Back"
+  }
+
   const handleNext = async () => {
-    const currentForm = getCurrentForm()
-    const isValid = await currentForm.trigger()
+    // const currentForm = getCurrentForm()
+    // const isValid = await currentForm.trigger()
 
-    if (isValid) {
-      const data = currentForm.getValues()
-      setFormData(prev => ({ ...prev, ...data }))
+    // if (isValid) {
+    //   const data = currentForm.getValues()
+    //   setFormData(prev => ({ ...prev, ...data }))
 
-      if (currentStep < steps.length) {
-        setCurrentStep(prev => prev + 1)
-      }
-    } else {
-      console.log("Validation failed:", currentForm.formState.errors)
+    //   if (currentStep < steps.length) {
+    //     setCurrentStep(prev => prev + 1)
+    //   }
+    // } else {
+    //   console.log("Validation failed:", currentForm.formState.errors)
+    // }
+
+    if (currentStep < steps.length) {
+      setCurrentStep(prev => prev + 1)
     }
   }
 
   const handleBack = () => {
-    const currentForm = getCurrentForm()
-    const currentData = currentForm.getValues()
-    setFormData(prev => ({ ...prev, ...currentData }))
+    // const currentForm = getCurrentForm()
+    // const currentData = currentForm.getValues()
+    // setFormData(prev => ({ ...prev, ...currentData }))
 
+    // if (currentStep > 1) {
+    //   setCurrentStep(prev => prev - 1)
+    // }
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1)
     }
@@ -136,18 +204,19 @@ function VehicleStepForm() {
         <Button>Add Vehicle</Button>
       </DrawerTrigger>
       <DrawerContent showHandle={false} className="h-dvh rounded-none!">
-        <DrawerHeader className="border-b px-0">
-          <div className="drawer-container">
-            <DrawerTitle className="md:text-left">
-              {currentStep === 1 ? "Add New Vehicle" : "Vehicle Pricing"}
-            </DrawerTitle>
+        <DrawerHeader className="px-0 pb-0">
+          <div className="drawer-container my-2">
+            <DrawerTitle className="md:text-left">Add New Vehicle</DrawerTitle>
             <p className="md:text-left text-muted-foreground">
               Step {currentStep} of {steps.length} - {steps[currentStep - 1].title}
             </p>
           </div>
+          <div className="h-1 bg-secondary">
+            <Progress className="h-1" value={(currentStep / steps.length) * 100} />
+          </div>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">{renderStepContent()}</div>
+        <div className="flex-1 overflow-y-auto px-4 py-2">{renderStepContent()}</div>
 
         <DrawerFooter className="my-2 px-0 border-t">
           <div className="flex justify-between drawer-container">
@@ -159,7 +228,7 @@ function VehicleStepForm() {
               className="flex items-center gap-2 bg-transparent"
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous
+              {getPreviousButtonText()}
             </Button>
 
             {currentStep < steps.length ? (
@@ -168,7 +237,7 @@ function VehicleStepForm() {
                 onClick={handleNext}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                Next
+                {getNextButtonText()}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             ) : (
