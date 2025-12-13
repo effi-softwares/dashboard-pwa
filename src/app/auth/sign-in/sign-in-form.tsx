@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useSearchParams } from "next/navigation"
 
@@ -17,12 +18,14 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { authClient } from "@/lib/auth/auth-client"
 import { type SignInFormData, SignInFormSchema } from "@/zod/auth-forms"
 
 export function SignInForm() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/"
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(SignInFormSchema),
@@ -35,15 +38,15 @@ export function SignInForm() {
 
   const handleSignIn = async (data: SignInFormData) => {
     try {
+      setIsLoading(true)
       await authClient.signIn.email(
         { ...data },
         {
           onError: error => {
-            toast.error("Sign in failed")
+            toast.error("Failed to sign in. Please check your credentials and try again.")
             console.error(error)
           },
           onSuccess: () => {
-            toast.success("Successfully signed in!")
             window.location.href = callbackUrl
           },
         },
@@ -51,6 +54,8 @@ export function SignInForm() {
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.")
       console.error(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -118,7 +123,7 @@ export function SignInForm() {
           )}
         />
         <Button className="w-full" type="submit">
-          Login
+          {isLoading ? <Spinner /> : "Sign In"}
         </Button>
       </form>
     </Form>
