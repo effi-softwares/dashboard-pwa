@@ -221,7 +221,7 @@ function VehicleStepForm() {
         <div className="flex-1 overflow-y-auto px-4 py-2">{renderStepContent()}</div>
 
         <DrawerFooter className="my-2 px-0 border-t">
-          <div className="flex justify-between drawer-container">
+          <div className="flex justify-between drawer-container gap-4">
             <Button
               type="button"
               variant="outline"
@@ -231,6 +231,15 @@ function VehicleStepForm() {
             >
               <ChevronLeft className="w-4 h-4" />
               {getPreviousButtonText()}
+            </Button>
+            <div className="flex-1"></div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 text-sky-700 bg-transparent hover:bg-transparent hover:underline hover:text-sky-600"
+            >
+              Cancel
             </Button>
 
             {currentStep < steps.length ? (
