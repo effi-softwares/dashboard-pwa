@@ -2,6 +2,7 @@ import { UseFormReturn } from "react-hook-form"
 
 import { CalendarRange, Pin } from "lucide-react"
 
+import ColorSelector from "@/components/color-selector"
 import {
   FatInputGroup,
   FatInputGroupAddon,
@@ -123,9 +124,10 @@ function IdentityFom({ form }: IdentityFomProps) {
             <FormItem>
               <FormLabel>Color</FormLabel>
               <FormControl>
-                <FatInputGroup>
+                {/* <FatInputGroup>
                   <FatInputGroupInput {...field} type="text" placeholder="Enter color" />
-                </FatInputGroup>
+                </FatInputGroup> */}
+                <ColorSelector />
               </FormControl>
               <FormMessage />
             </FormItem>
