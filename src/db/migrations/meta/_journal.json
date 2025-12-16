@@ -8,6 +8,20 @@
       "when": 1765297932531,
       "tag": "0000_cool_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765894782528,
+      "tag": "0001_slim_spirit",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765900109613,
+      "tag": "0002_overconfident_swordsman",
+      "breakpoints": true
     }
   ]
 }

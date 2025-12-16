@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button"
 import { FatInput } from "@/components/ui/fat-input"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
-
-import { VehicleRatesInput } from "../zod"
+import { VehicleRatesInput } from "@/zod/vehicle-form"
 
 type RateFormFieldProps = {
   control: Control<VehicleRatesInput>

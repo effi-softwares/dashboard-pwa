@@ -17,8 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
-
-import { VehicleIdentityInput } from "../zod"
+import { VehicleIdentityInput } from "@/zod/vehicle-form"
 
 type IdentityFomProps = {
   form: UseFormReturn<VehicleIdentityInput>
@@ -120,6 +119,7 @@ function IdentityFom({ form }: IdentityFomProps) {
         <FormField
           control={form.control}
           name="color"
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           render={({ field }) => (
             <FormItem>
               <FormLabel>Color</FormLabel>

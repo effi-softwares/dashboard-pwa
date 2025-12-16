@@ -16,7 +16,9 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Progress } from "@/components/ui/progress"
-
+import { Spinner } from "@/components/ui/spinner"
+import { useCreateVehicle } from "@/hooks/use-create-vehicle"
+import type { Vehicle } from "@/zod/vehicle-form"
 import {
   VehicleIdentityInput,
   vehicleIdentitySchema,
@@ -27,7 +29,8 @@ import {
   vehicleRatesSchema,
   VehicleSpecsInput,
   vehicleSpecsSchema,
-} from "../zod"
+} from "@/zod/vehicle-form"
+
 import IdentityForm from "./identity-form"
 import OperationsForm from "./operations-form"
 import RateForm from "./rate-form"
@@ -51,6 +54,7 @@ function VehicleStepForm() {
   const [currentStep, setCurrentStep] = useState(1)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formData, setFormData] = useState<Partial<VehicleInput>>({})
+  const createVehicle = useCreateVehicle()
 
   const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
@@ -190,11 +194,31 @@ function VehicleStepForm() {
     const isValid = await currentForm.trigger()
 
     if (isValid) {
-      const currentStepData = currentForm.getValues()
-      const finalData = { ...formData, ...currentStepData }
+      try {
+        const identity = identityForm.getValues()
+        const specs = specsForm.getValues()
+        const operations = operationsForm.getValues()
+        const rates = ratesForm.getValues()
 
-      console.log("FINAL SUBMISSION DATA: ", finalData)
-      setIsOpen(false)
+        const payloadInput: VehicleInput = {
+          identity,
+          specs,
+          operations,
+          rates,
+        }
+
+        const created = await createVehicle.mutateAsync(payloadInput as unknown as Vehicle)
+        console.log("Vehicle created:", created)
+
+        setIsOpen(false)
+        setCurrentStep(1)
+        identityForm.reset()
+        specsForm.reset()
+        operationsForm.reset()
+        ratesForm.reset()
+      } catch (err) {
+        console.error("Create vehicle failed:", err)
+      }
     } else {
       console.log("Final step validation failed:", currentForm.formState.errors)
     }
@@ -255,10 +279,15 @@ function VehicleStepForm() {
               <Button
                 type="button"
                 onClick={handleSave}
+                disabled={createVehicle.isPending}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                <Save className="w-4 h-4" />
-                Save Vehicle
+                {createVehicle.isPending ? (
+                  <Spinner className="h-4 w-4" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                {createVehicle.isPending ? "Saving..." : "Save Vehicle"}
               </Button>
             )}
           </div>

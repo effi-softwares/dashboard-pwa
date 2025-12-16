@@ -7,6 +7,7 @@ export const PricingModelEnum = z.enum(["Daily", "Weekly", "Monthly", "Distance-
 
 export const vehicleIdentitySchema = z.object({
   brand: z.string().min(2, "Brand is required (e.g. Toyota)"),
+  type: z.string().min(2, "Vehicle type is required (e.g. Sedan)"),
   model: z.string().min(2, "Model is required (e.g. Corolla)"),
   year: z
     .number()
@@ -14,7 +15,10 @@ export const vehicleIdentitySchema = z.object({
     .max(new Date().getFullYear() + 1, "Year cannot be in the future"),
   vin: z.string().length(17, "VIN must be exactly 17 characters").or(z.string().min(5)),
   licensePlate: z.string().min(2, "License plate is required").toUpperCase(),
-  color: z.string().min(3, "Color is required"),
+  color: z.object({
+    name: z.string().min(2, "Color name is required"),
+    hex: z.string().regex(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, "Invalid hex color code"),
+  }),
   isBrandNew: z.boolean().default(false),
 })
 
@@ -117,7 +121,8 @@ export type VehicleOperationsInput = z.input<typeof vehicleOperationsSchema>
 export type VehicleRates = z.infer<typeof vehicleRatesSchema>
 export type VehicleRatesInput = z.input<typeof vehicleRatesSchema>
 
-export type Vehicle = z.infer<typeof vehicleSchema>
+// Todo: temporary omit operations and rates mapping
+export type Vehicle = Omit<z.infer<typeof vehicleSchema>, "operations" | "rates">
 export type VehicleInput = z.input<typeof vehicleSchema>
 
 export type FormDataType = Partial<VehicleInput>

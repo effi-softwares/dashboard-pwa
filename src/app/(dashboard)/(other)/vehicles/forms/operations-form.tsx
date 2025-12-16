@@ -13,8 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-
-import { VehicleOperationsInput } from "../zod"
+import { VehicleOperationsInput } from "@/zod/vehicle-form"
 
 type OperationsFormProps = {
   form: UseFormReturn<VehicleOperationsInput>

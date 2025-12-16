@@ -14,8 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Label } from "@/components/ui/label"
-
-import { VehicleSpecsInput } from "../zod"
+import { VehicleSpecsInput } from "@/zod/vehicle-form"
 
 type SpecFormProps = {
   form: UseFormReturn<VehicleSpecsInput>
