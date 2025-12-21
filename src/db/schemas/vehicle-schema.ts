@@ -35,7 +35,7 @@ export const vehicleStatusTypeEnum = pgEnum("vehicle_status_type", [
 
 export const vehicleTable = pgTable("vehicles", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  type: text("type").notNull(),
+  vehicleType: text("vehicle_type").notNull(),
   brand: text("brand").notNull(),
   model: text("model").notNull(),
   year: smallint("year").notNull(),
@@ -47,7 +47,6 @@ export const vehicleTable = pgTable("vehicles", {
   isBrandNew: boolean("is_brand_new").default(false).notNull(),
   transmission: transmissionEnum("transmission").notNull(),
   fuelType: fuelTypeEnum("fuel_type").notNull(),
-  odometerReading: integer("odometer_reading").notNull(),
   seats: smallint("seats").notNull(),
   doors: smallint("doors").notNull(),
   baggageCapacity: smallint("baggage_capacity").notNull(),

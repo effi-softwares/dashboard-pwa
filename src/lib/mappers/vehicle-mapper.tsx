@@ -7,7 +7,7 @@ type VehicleDbSelect = typeof vehicleTable.$inferSelect
 export function toPersistence(input: Vehicle): VehicleDbInsert {
   return {
     brand: input.identity.brand,
-    type: input.identity.type,
+    vehicleType: input.identity.vehicleType,
     model: input.identity.model,
     year: input.identity.year,
     vin: input.identity.vin,
@@ -18,7 +18,6 @@ export function toPersistence(input: Vehicle): VehicleDbInsert {
     colorHex: input.identity.color.hex,
     transmission: input.specs.transmission,
     fuelType: input.specs.fuelType,
-    odometerReading: input.specs.odometerReading,
     seats: input.specs.seats,
     doors: input.specs.doors,
     baggageCapacity: input.specs.baggageCapacity,
@@ -33,7 +32,7 @@ export function toDomain(dbRecord: VehicleDbSelect): Vehicle {
   return {
     identity: {
       brand: dbRecord.brand,
-      type: dbRecord.type,
+      vehicleType: dbRecord.vehicleType,
       model: dbRecord.model,
       year: dbRecord.year,
       vin: dbRecord.vin,
@@ -48,7 +47,6 @@ export function toDomain(dbRecord: VehicleDbSelect): Vehicle {
     specs: {
       transmission: dbRecord.transmission,
       fuelType: dbRecord.fuelType,
-      odometerReading: dbRecord.odometerReading,
       seats: dbRecord.seats,
       doors: dbRecord.doors,
       baggageCapacity: dbRecord.baggageCapacity,

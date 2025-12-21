@@ -1,10 +1,14 @@
 import { UseFormReturn } from "react-hook-form"
 
-import { Archive, CheckCircle2, DollarSign, Wrench } from "lucide-react"
+import { Archive, CheckCircle2, DollarSign, DoorOpen, Wrench } from "lucide-react"
 
 import DateSelector from "@/components/date-selector"
 import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
-import { FatInputGroup, FatInputGroupInput } from "@/components/ui/fat-input-group"
+import {
+  FatInputGroup,
+  FatInputGroupAddon,
+  FatInputGroupInput,
+} from "@/components/ui/fat-input-group"
 import {
   Form,
   FormControl,
@@ -67,21 +71,6 @@ function OperationsForm({ form }: OperationsFormProps) {
         </div>
         <FormField
           control={form.control}
-          name="mileage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mileage</FormLabel>
-              <FormControl>
-                <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter mileage" />
-                </FatInputGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="registrationExpiryDate"
           render={({ field }) => (
             <FormItem>
@@ -97,7 +86,20 @@ function OperationsForm({ form }: OperationsFormProps) {
                   to={{
                     year: new Date().getFullYear(),
                   }}
-                />
+                >
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <DoorOpen />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      {...field}
+                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      type="text"
+                      placeholder="Select registration expiry date"
+                      readOnly
+                    />
+                  </FatInputGroup>
+                </DateSelector>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,7 +108,7 @@ function OperationsForm({ form }: OperationsFormProps) {
 
         <FormField
           control={form.control}
-          name="mileage"
+          name="insurancePolicyNumber"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Insurance Policy Number</FormLabel>
@@ -141,7 +143,20 @@ function OperationsForm({ form }: OperationsFormProps) {
                   to={{
                     year: new Date().getFullYear(),
                   }}
-                />
+                >
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <DoorOpen />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      {...field}
+                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      type="text"
+                      placeholder="Select insurance expiry date"
+                      readOnly
+                    />
+                  </FatInputGroup>
+                </DateSelector>
               </FormControl>
               <FormMessage />
             </FormItem>

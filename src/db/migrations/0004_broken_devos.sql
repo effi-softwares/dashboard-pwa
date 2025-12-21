@@ -1,0 +1,1 @@
+ALTER TABLE "vehicles" RENAME COLUMN "type" TO "vehicle_type";

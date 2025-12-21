@@ -1,0 +1,1 @@
+ALTER TABLE "vehicles" DROP COLUMN "odometer_reading";

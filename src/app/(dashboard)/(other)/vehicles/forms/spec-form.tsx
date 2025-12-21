@@ -1,10 +1,26 @@
 import { UseFormReturn } from "react-hook-form"
 
-import { Battery, Droplet, Gauge, Hand, Leaf, Settings, Zap } from "lucide-react"
+import {
+  BaggageClaimIcon,
+  Battery,
+  DoorOpen,
+  Droplet,
+  Gauge,
+  Hand,
+  Leaf,
+  Settings,
+  Table,
+  Zap,
+} from "lucide-react"
 
+import { NumberSelector } from "@/components/number-selector"
 import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
 import { Checkbox } from "@/components/ui/checkbox"
-import { FatInputGroup, FatInputGroupInput } from "@/components/ui/fat-input-group"
+import {
+  FatInputGroup,
+  FatInputGroupAddon,
+  FatInputGroupInput,
+} from "@/components/ui/fat-input-group"
 import {
   Form,
   FormControl,
@@ -84,9 +100,20 @@ function SpecForm({ form }: SpecFormProps) {
             <FormItem>
               <FormLabel>Seats</FormLabel>
               <FormControl>
-                <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter seats" />
-                </FatInputGroup>
+                <NumberSelector field={field} min={2} max={7}>
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <Table />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      {...field}
+                      value={field.value || ""}
+                      type="text"
+                      placeholder="Select number of seats"
+                      readOnly
+                    />
+                  </FatInputGroup>
+                </NumberSelector>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,9 +127,20 @@ function SpecForm({ form }: SpecFormProps) {
             <FormItem>
               <FormLabel>Doors</FormLabel>
               <FormControl>
-                <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter doors" />
-                </FatInputGroup>
+                <NumberSelector field={field} min={2} max={5}>
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <DoorOpen />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      {...field}
+                      value={field.value || ""}
+                      type="text"
+                      placeholder="Select number of doors"
+                      readOnly
+                    />
+                  </FatInputGroup>
+                </NumberSelector>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,7 +155,25 @@ function SpecForm({ form }: SpecFormProps) {
               <FormLabel>Baggage Capacity</FormLabel>
               <FormControl>
                 <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter baggage capacity" />
+                  <FatInputGroupAddon>
+                    <BaggageClaimIcon />
+                  </FatInputGroupAddon>
+                  <FatInputGroupInput
+                    {...field}
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    step={1}
+                    value={field.value ?? ""}
+                    onChange={event => {
+                      const value = event.target.value
+                      field.onChange(value === "" ? undefined : Number(value))
+                    }}
+                    placeholder="Enter baggage capacity"
+                  />
+                  <FatInputGroupAddon align="inline-end" className="border-l">
+                    Kg
+                  </FatInputGroupAddon>
                 </FatInputGroup>
               </FormControl>
               <FormMessage />

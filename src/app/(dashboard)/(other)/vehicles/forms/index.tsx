@@ -59,13 +59,14 @@ function VehicleStepForm() {
   const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      brand: formData.identity?.brand || "",
-      model: formData.identity?.model || "",
-      year: formData.identity?.year || new Date().getFullYear(),
-      vin: formData.identity?.vin || "",
-      licensePlate: formData.identity?.licensePlate || "",
+      brand: formData.identity?.brand,
+      vehicleType: formData.identity?.vehicleType,
+      model: formData.identity?.model,
+      year: formData.identity?.year,
+      vin: formData.identity?.vin,
+      licensePlate: formData.identity?.licensePlate,
       color: formData.identity?.color,
-      isBrandNew: formData.identity?.isBrandNew,
+      isBrandNew: formData.identity?.isBrandNew ?? false,
     },
     mode: "onBlur",
   })
@@ -87,7 +88,6 @@ function VehicleStepForm() {
     resolver: zodResolver(vehicleOperationsSchema),
     defaultValues: {
       status: formData.operations?.status,
-      mileage: formData.operations?.mileage,
       registrationExpiryDate: formData.operations?.registrationExpiryDate,
       insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
       insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
@@ -157,26 +157,41 @@ function VehicleStepForm() {
   }
 
   const handleNext = async () => {
-    // const currentForm = getCurrentForm()
-    // const isValid = await currentForm.trigger()
+    // Todo: commented out validation for now, don't want to block navigation during testing
+    const currentForm = getCurrentForm()
+    const isValid = await currentForm.trigger()
 
-    // if (isValid) {
-    //   const data = currentForm.getValues()
-    //   setFormData(prev => ({ ...prev, ...data }))
+    if (isValid) {
+      const data = currentForm.getValues()
+      switch (currentStep) {
+        case 1:
+          setFormData(prev => ({ ...prev, identity: data as VehicleIdentityInput }))
+          break
+        case 2:
+          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
+          break
+        case 3:
+          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          break
+        case 4:
+          setFormData(prev => ({ ...prev, rates: data as VehicleRatesInput }))
+          break
+      }
 
-    //   if (currentStep < steps.length) {
-    //     setCurrentStep(prev => prev + 1)
-    //   }
-    // } else {
-    //   console.log("Validation failed:", currentForm.formState.errors)
-    // }
-
-    if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1)
+      if (currentStep < steps.length) {
+        setCurrentStep(prev => prev + 1)
+      }
+    } else {
+      console.log("Validation failed:", currentForm.formState.errors)
     }
+
+    // if (currentStep < steps.length) {
+    //   setCurrentStep(prev => prev + 1)
+    // }
   }
 
   const handleBack = () => {
+    // Todo: commented out validation for now, don't want to block navigation during testing
     // const currentForm = getCurrentForm()
     // const currentData = currentForm.getValues()
     // setFormData(prev => ({ ...prev, ...currentData }))
