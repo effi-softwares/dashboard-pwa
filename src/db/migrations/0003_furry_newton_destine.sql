@@ -1,0 +1,1 @@
+ALTER TABLE "vehicles" ADD COLUMN "color_label" text NOT NULL;

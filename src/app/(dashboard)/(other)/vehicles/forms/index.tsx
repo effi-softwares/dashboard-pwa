@@ -207,6 +207,9 @@ function VehicleStepForm() {
           rates,
         }
 
+        console.log(payloadInput)
+        return
+
         const created = await createVehicle.mutateAsync(payloadInput as unknown as Vehicle)
         console.log("Vehicle created:", created)
 

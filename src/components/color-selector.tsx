@@ -2,16 +2,7 @@
 
 import { useState } from "react"
 
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { VEHICLE_COLORS } from "@/lib/contants"
 import { getTextColor } from "@/lib/utils"
 
 import {
@@ -22,35 +13,58 @@ import {
   ResponsiveDialogTrigger,
 } from "./responsive-dialog"
 
-function ColorSelector() {
-  const [value, setValue] = useState<string | null>(null)
+type Color = {
+  name: string
+  label: string
+  hex: string
+  textColor?: string
+}
+
+type ColorSelectorProps = {
+  title?: string
+  multiple?: boolean
+  colors: Color[]
+  value: Color | null
+  onSelect: (color: Color | null) => void
+  children: React.ReactNode
+}
+
+function ColorSelector({ title, colors, value, onSelect, children }: ColorSelectorProps) {
+  const [open, setOpen] = useState(false)
+
+  const handleSelect = (colorName: string) => {
+    if (!colorName) {
+      onSelect(null)
+      return
+    }
+
+    const selectedColor = colors.find(color => color.name === colorName) || null
+    onSelect(selectedColor)
+    setOpen(false)
+  }
 
   return (
-    <ResponsiveDialog>
-      <ResponsiveDialogTrigger asChild>
-        <Button type="button" className="fat">
-          Select Color
-        </Button>
-      </ResponsiveDialogTrigger>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>{children}</ResponsiveDialogTrigger>
 
       <ResponsiveDialogContent className="p-4 max-w-lg">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Vehicle color</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>{title ?? "Select color"}</ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
 
         <ToggleGroup
           type="single"
-          value={value ?? ""}
-          onValueChange={v => setValue(v || null)}
+          value={value?.name}
+          onValueChange={handleSelect}
           className="grid grid-cols-3 md:grid-cols-4 gap-4"
         >
-          {VEHICLE_COLORS.map(color => {
-            const active = value === color.key
+          {colors.map((color: Color) => {
+            const active = value?.name === color.name
 
             return (
               <ToggleGroupItem
-                key={color.key}
-                value={color.key}
+                key={color.name}
+                value={color.name}
                 style={{
                   backgroundColor: color.hex,
                   height: "80px",

@@ -1,6 +1,6 @@
 import { UseFormReturn } from "react-hook-form"
 
-import { CalendarRange, Pin } from "lucide-react"
+import { CalendarRange, CloudMoonRainIcon, Pin } from "lucide-react"
 
 import ColorSelector from "@/components/color-selector"
 import {
@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
+import { VEHICLE_COLORS } from "@/lib/contants"
 import { VehicleIdentityInput } from "@/zod/vehicle-form"
 
 type IdentityFomProps = {
@@ -119,15 +120,27 @@ function IdentityFom({ form }: IdentityFomProps) {
         <FormField
           control={form.control}
           name="color"
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           render={({ field }) => (
             <FormItem>
               <FormLabel>Color</FormLabel>
               <FormControl>
-                {/* <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter color" />
-                </FatInputGroup> */}
-                <ColorSelector />
+                <ColorSelector
+                  colors={VEHICLE_COLORS}
+                  value={field.value}
+                  onSelect={field.onChange}
+                >
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <CloudMoonRainIcon />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      type="text"
+                      placeholder="Select vehicle color"
+                      readOnly
+                      value={field.value ? field.value.label : ""}
+                    />
+                  </FatInputGroup>
+                </ColorSelector>
               </FormControl>
               <FormMessage />
             </FormItem>

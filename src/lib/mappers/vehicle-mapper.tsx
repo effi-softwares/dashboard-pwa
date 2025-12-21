@@ -14,6 +14,7 @@ export function toPersistence(input: Vehicle): VehicleDbInsert {
     licensePlate: input.identity.licensePlate,
     isBrandNew: input.identity.isBrandNew,
     colorName: input.identity.color.name,
+    colorLabel: input.identity.color.label,
     colorHex: input.identity.color.hex,
     transmission: input.specs.transmission,
     fuelType: input.specs.fuelType,
@@ -40,6 +41,7 @@ export function toDomain(dbRecord: VehicleDbSelect): Vehicle {
       isBrandNew: dbRecord.isBrandNew,
       color: {
         name: dbRecord.colorName,
+        label: dbRecord.colorLabel,
         hex: dbRecord.colorHex,
       },
     },

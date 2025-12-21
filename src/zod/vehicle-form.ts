@@ -17,6 +17,7 @@ export const vehicleIdentitySchema = z.object({
   licensePlate: z.string().min(2, "License plate is required").toUpperCase(),
   color: z.object({
     name: z.string().min(2, "Color name is required"),
+    label: z.string().min(2, "Color label is required"),
     hex: z.string().regex(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, "Invalid hex color code"),
   }),
   isBrandNew: z.boolean().default(false),

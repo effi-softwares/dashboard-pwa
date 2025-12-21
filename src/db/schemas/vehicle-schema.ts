@@ -42,6 +42,7 @@ export const vehicleTable = pgTable("vehicles", {
   vin: text("vin").notNull(),
   licensePlate: text("license_plate").notNull(),
   colorName: text("color_name").notNull(),
+  colorLabel: text("color_label").notNull(),
   colorHex: text("color_hex").notNull(),
   isBrandNew: boolean("is_brand_new").default(false).notNull(),
   transmission: transmissionEnum("transmission").notNull(),
