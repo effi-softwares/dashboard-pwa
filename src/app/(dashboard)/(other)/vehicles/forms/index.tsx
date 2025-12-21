@@ -16,7 +16,9 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Progress } from "@/components/ui/progress"
-
+import { Spinner } from "@/components/ui/spinner"
+import { useCreateVehicle } from "@/hooks/use-create-vehicle"
+import type { Vehicle } from "@/zod/vehicle-form"
 import {
   VehicleIdentityInput,
   vehicleIdentitySchema,
@@ -27,7 +29,8 @@ import {
   vehicleRatesSchema,
   VehicleSpecsInput,
   vehicleSpecsSchema,
-} from "../zod"
+} from "@/zod/vehicle-form"
+
 import IdentityForm from "./identity-form"
 import OperationsForm from "./operations-form"
 import RateForm from "./rate-form"
@@ -51,17 +54,19 @@ function VehicleStepForm() {
   const [currentStep, setCurrentStep] = useState(1)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formData, setFormData] = useState<Partial<VehicleInput>>({})
+  const createVehicle = useCreateVehicle()
 
   const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      brand: formData.identity?.brand || "",
-      model: formData.identity?.model || "",
-      year: formData.identity?.year || new Date().getFullYear(),
-      vin: formData.identity?.vin || "",
-      licensePlate: formData.identity?.licensePlate || "",
+      brand: formData.identity?.brand,
+      vehicleType: formData.identity?.vehicleType,
+      model: formData.identity?.model,
+      year: formData.identity?.year,
+      vin: formData.identity?.vin,
+      licensePlate: formData.identity?.licensePlate,
       color: formData.identity?.color,
-      isBrandNew: formData.identity?.isBrandNew,
+      isBrandNew: formData.identity?.isBrandNew ?? false,
     },
     mode: "onBlur",
   })
@@ -83,7 +88,6 @@ function VehicleStepForm() {
     resolver: zodResolver(vehicleOperationsSchema),
     defaultValues: {
       status: formData.operations?.status,
-      mileage: formData.operations?.mileage,
       registrationExpiryDate: formData.operations?.registrationExpiryDate,
       insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
       insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
@@ -153,26 +157,41 @@ function VehicleStepForm() {
   }
 
   const handleNext = async () => {
-    // const currentForm = getCurrentForm()
-    // const isValid = await currentForm.trigger()
+    // Todo: commented out validation for now, don't want to block navigation during testing
+    const currentForm = getCurrentForm()
+    const isValid = await currentForm.trigger()
 
-    // if (isValid) {
-    //   const data = currentForm.getValues()
-    //   setFormData(prev => ({ ...prev, ...data }))
+    if (isValid) {
+      const data = currentForm.getValues()
+      switch (currentStep) {
+        case 1:
+          setFormData(prev => ({ ...prev, identity: data as VehicleIdentityInput }))
+          break
+        case 2:
+          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
+          break
+        case 3:
+          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          break
+        case 4:
+          setFormData(prev => ({ ...prev, rates: data as VehicleRatesInput }))
+          break
+      }
 
-    //   if (currentStep < steps.length) {
-    //     setCurrentStep(prev => prev + 1)
-    //   }
-    // } else {
-    //   console.log("Validation failed:", currentForm.formState.errors)
-    // }
-
-    if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1)
+      if (currentStep < steps.length) {
+        setCurrentStep(prev => prev + 1)
+      }
+    } else {
+      console.log("Validation failed:", currentForm.formState.errors)
     }
+
+    // if (currentStep < steps.length) {
+    //   setCurrentStep(prev => prev + 1)
+    // }
   }
 
   const handleBack = () => {
+    // Todo: commented out validation for now, don't want to block navigation during testing
     // const currentForm = getCurrentForm()
     // const currentData = currentForm.getValues()
     // setFormData(prev => ({ ...prev, ...currentData }))
@@ -190,11 +209,34 @@ function VehicleStepForm() {
     const isValid = await currentForm.trigger()
 
     if (isValid) {
-      const currentStepData = currentForm.getValues()
-      const finalData = { ...formData, ...currentStepData }
+      try {
+        const identity = identityForm.getValues()
+        const specs = specsForm.getValues()
+        const operations = operationsForm.getValues()
+        const rates = ratesForm.getValues()
 
-      console.log("FINAL SUBMISSION DATA: ", finalData)
-      setIsOpen(false)
+        const payloadInput: VehicleInput = {
+          identity,
+          specs,
+          operations,
+          rates,
+        }
+
+        console.log(payloadInput)
+        return
+
+        const created = await createVehicle.mutateAsync(payloadInput as unknown as Vehicle)
+        console.log("Vehicle created:", created)
+
+        setIsOpen(false)
+        setCurrentStep(1)
+        identityForm.reset()
+        specsForm.reset()
+        operationsForm.reset()
+        ratesForm.reset()
+      } catch (err) {
+        console.error("Create vehicle failed:", err)
+      }
     } else {
       console.log("Final step validation failed:", currentForm.formState.errors)
     }
@@ -255,10 +297,15 @@ function VehicleStepForm() {
               <Button
                 type="button"
                 onClick={handleSave}
+                disabled={createVehicle.isPending}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                <Save className="w-4 h-4" />
-                Save Vehicle
+                {createVehicle.isPending ? (
+                  <Spinner className="h-4 w-4" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                {createVehicle.isPending ? "Saving..." : "Save Vehicle"}
               </Button>
             )}
           </div>

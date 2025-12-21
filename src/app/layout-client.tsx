@@ -1,6 +1,8 @@
 "use client"
 import React from "react"
 
+import { QueryProvider } from "@/providers/query-provider"
+
 import "./globals.css"
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
@@ -17,5 +19,5 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     }
   }, [])
 
-  return children
+  return <QueryProvider>{children}</QueryProvider>
 }

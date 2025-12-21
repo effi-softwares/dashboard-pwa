@@ -1,6 +1,6 @@
 import { UseFormReturn } from "react-hook-form"
 
-import { CalendarRange, Pin } from "lucide-react"
+import { CalendarRange, CloudMoonRainIcon, Pin } from "lucide-react"
 
 import ColorSelector from "@/components/color-selector"
 import {
@@ -17,8 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
-
-import { VehicleIdentityInput } from "../zod"
+import { YearSelector } from "@/components/year-selector"
+import { VEHICLE_COLORS } from "@/lib/contants"
+import { VehicleIdentityInput } from "@/zod/vehicle-form"
 
 type IdentityFomProps = {
   form: UseFormReturn<VehicleIdentityInput>
@@ -28,6 +29,22 @@ function IdentityFom({ form }: IdentityFomProps) {
   return (
     <Form {...form}>
       <div className="my-4 drawer-container grid grid-cols-1 md:grid-cols-2 gap-8">
+        <FormField
+          control={form.control}
+          name="vehicleType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type</FormLabel>
+              <FormControl>
+                <FatInputGroup>
+                  <FatInputGroupInput {...field} type="text" placeholder="Enter Type" />
+                </FatInputGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="brand"
@@ -67,12 +84,20 @@ function IdentityFom({ form }: IdentityFomProps) {
             <FormItem>
               <FormLabel>Manufacture Year</FormLabel>
               <FormControl>
-                <FatInputGroup>
-                  <FatInputGroupAddon>
-                    <CalendarRange />
-                  </FatInputGroupAddon>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter manufacture year" />
-                </FatInputGroup>
+                <YearSelector field={field}>
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <CalendarRange />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      {...field}
+                      value={field.value || ""}
+                      type="text"
+                      placeholder="Select year"
+                      readOnly
+                    />
+                  </FatInputGroup>
+                </YearSelector>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,10 +149,23 @@ function IdentityFom({ form }: IdentityFomProps) {
             <FormItem>
               <FormLabel>Color</FormLabel>
               <FormControl>
-                {/* <FatInputGroup>
-                  <FatInputGroupInput {...field} type="text" placeholder="Enter color" />
-                </FatInputGroup> */}
-                <ColorSelector />
+                <ColorSelector
+                  colors={VEHICLE_COLORS}
+                  value={field.value}
+                  onSelect={field.onChange}
+                >
+                  <FatInputGroup>
+                    <FatInputGroupAddon>
+                      <CloudMoonRainIcon />
+                    </FatInputGroupAddon>
+                    <FatInputGroupInput
+                      type="text"
+                      placeholder="Select vehicle color"
+                      readOnly
+                      value={field.value ? field.value.label : ""}
+                    />
+                  </FatInputGroup>
+                </ColorSelector>
               </FormControl>
               <FormMessage />
             </FormItem>

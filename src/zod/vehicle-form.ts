@@ -7,14 +7,19 @@ export const PricingModelEnum = z.enum(["Daily", "Weekly", "Monthly", "Distance-
 
 export const vehicleIdentitySchema = z.object({
   brand: z.string().min(2, "Brand is required (e.g. Toyota)"),
+  vehicleType: z.string().min(2, "Vehicle type is required (e.g. Sedan)"),
   model: z.string().min(2, "Model is required (e.g. Corolla)"),
   year: z
-    .number()
+    .number({ message: "Year must be a valid number" })
     .min(1900, "Year must be 1900 or later")
     .max(new Date().getFullYear() + 1, "Year cannot be in the future"),
   vin: z.string().length(17, "VIN must be exactly 17 characters").or(z.string().min(5)),
   licensePlate: z.string().min(2, "License plate is required").toUpperCase(),
-  color: z.string().min(3, "Color is required"),
+  color: z.object({
+    name: z.string().min(2, "Color name is required"),
+    label: z.string().min(2, "Color label is required"),
+    hex: z.string().regex(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, "Invalid hex color code"),
+  }),
   isBrandNew: z.boolean().default(false),
 })
 
@@ -28,7 +33,6 @@ const vehicleFeaturesSchema = z.object({
 export const vehicleSpecsSchema = z.object({
   transmission: TransmissionEnum,
   fuelType: FuelTypeEnum,
-  odometerReading: z.number().min(0, "Odometer reading cannot be negative"),
   seats: z.number().min(1).max(60),
   doors: z.number().min(2).max(5),
   baggageCapacity: z.number().min(0, "Cannot be negative").describe("Number of large bags"),
@@ -37,7 +41,6 @@ export const vehicleSpecsSchema = z.object({
 
 export const vehicleOperationsSchema = z.object({
   status: VehicleStatusEnum.default("Available"),
-  mileage: z.number().min(0, "Mileage cannot be negative"),
   registrationExpiryDate: z.date({
     message: "Registration expiry date is required",
   }),
@@ -117,7 +120,8 @@ export type VehicleOperationsInput = z.input<typeof vehicleOperationsSchema>
 export type VehicleRates = z.infer<typeof vehicleRatesSchema>
 export type VehicleRatesInput = z.input<typeof vehicleRatesSchema>
 
-export type Vehicle = z.infer<typeof vehicleSchema>
+// Todo: temporary omit operations and rates mapping
+export type Vehicle = Omit<z.infer<typeof vehicleSchema>, "operations" | "rates">
 export type VehicleInput = z.input<typeof vehicleSchema>
 
 export type FormDataType = Partial<VehicleInput>

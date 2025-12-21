@@ -1,0 +1,1 @@
+ALTER TABLE "vehicle_status" ADD CONSTRAINT "vehicle_status_changed_by_user_id_fk" FOREIGN KEY ("changed_by") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;
