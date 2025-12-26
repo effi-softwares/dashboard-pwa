@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
@@ -45,6 +46,7 @@ type VehiclesResponse = {
 
 export function VehicleTable() {
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 20 })
@@ -123,6 +125,15 @@ export function VehicleTable() {
       changeStatus.mutate({ id, status })
     },
     [changeStatus],
+  )
+
+  const handleRowClick = React.useCallback(
+    (event: React.MouseEvent<HTMLTableRowElement>, rowId: string) => {
+      const target = event.target as HTMLElement
+      if (target.closest("[data-row-action]")) return
+      router.push(`/vehicles/${rowId}`)
+    },
+    [router],
   )
 
   const columns = React.useMemo(
@@ -261,7 +272,11 @@ export function VehicleTable() {
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map(row => (
-                  <TableRow key={row.id} className="touch-manipulation">
+                  <TableRow
+                    onClick={event => handleRowClick(event, row.original.id)}
+                    key={row.id}
+                    className="touch-manipulation cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                  >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className="text-sm">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

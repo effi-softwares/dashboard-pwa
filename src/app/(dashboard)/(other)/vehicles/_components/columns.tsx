@@ -118,45 +118,47 @@ export const buildVehicleColumns = ({
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => (
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="h-10 w-10 p-0" aria-label="Row actions">
-            {changingId === row.original.id ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <MoreHorizontal />
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[200px]">
-          <DropdownMenuLabel>Change status</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
-          >
-            Available
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onChangeStatus({ id: row.original.id, status: "Rented" })}
-          >
-            Rented
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onChangeStatus({ id: row.original.id, status: "Maintenance" })}
-          >
-            Maintenance
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onChangeStatus({ id: row.original.id, status: "Retired" })}
-          >
-            Retired
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-muted-foreground" disabled>
-            VIN: {row.original.vin}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div data-row-action className="flex justify-end">
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="h-10 w-10 p-0" aria-label="Row actions">
+              {changingId === row.original.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MoreHorizontal />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[200px]">
+            <DropdownMenuLabel>Change status</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
+            >
+              Available
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onChangeStatus({ id: row.original.id, status: "Rented" })}
+            >
+              Rented
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onChangeStatus({ id: row.original.id, status: "Maintenance" })}
+            >
+              Maintenance
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onChangeStatus({ id: row.original.id, status: "Retired" })}
+            >
+              Retired
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-muted-foreground" disabled>
+              VIN: {row.original.vin}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     ),
   },
 ]
