@@ -1,5 +1,5 @@
 function DashboardOtherLayout({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 min-h-0 overflow-hidden flex flex-col">{children}</div>
+  return <div className="px-4 pt-2">{children}</div>
 }
 
 export default DashboardOtherLayout

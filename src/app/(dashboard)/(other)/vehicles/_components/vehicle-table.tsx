@@ -151,7 +151,7 @@ export function VehicleTable() {
   })
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="flex flex-wrap gap-3 items-center py-4 px-4 shrink-0">
         <FatInput
           placeholder="Search brand, model, plate, VIN"
@@ -226,7 +226,7 @@ export function VehicleTable() {
       </div>
 
       <div className="flex-1 min-h-0 border rounded-md mx-4 flex flex-col overflow-hidden">
-        <div className="overflow-auto flex-1">
+        <div className="flex-1 overflow-y-auto overflow-x-auto">
           <Table>
             <TableHeader className="sticky top-0 bg-background shadow-sm">
               {table.getHeaderGroups().map(headerGroup => (
