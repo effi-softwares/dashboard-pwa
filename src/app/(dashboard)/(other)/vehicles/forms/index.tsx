@@ -6,7 +6,6 @@ import { useForm, UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Car, ChevronLeft, ChevronRight, LucideIcon, Save } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
   Drawer,
   DrawerContent,
@@ -15,6 +14,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { FatButton } from "@/components/ui/fat-button"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { useCreateVehicle } from "@/hooks/use-create-vehicle"
@@ -59,12 +59,12 @@ function VehicleStepForm() {
   const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      brand: formData.identity?.brand,
-      vehicleType: formData.identity?.vehicleType,
-      model: formData.identity?.model,
-      year: formData.identity?.year,
-      vin: formData.identity?.vin,
-      licensePlate: formData.identity?.licensePlate,
+      brand: formData.identity?.brand ?? "",
+      vehicleType: formData.identity?.vehicleType ?? "",
+      model: formData.identity?.model ?? "",
+      year: formData.identity?.year ?? new Date().getFullYear(),
+      vin: formData.identity?.vin ?? "",
+      licensePlate: formData.identity?.licensePlate ?? "",
       color: formData.identity?.color,
       isBrandNew: formData.identity?.isBrandNew ?? false,
     },
@@ -90,7 +90,7 @@ function VehicleStepForm() {
       status: formData.operations?.status,
       registrationExpiryDate: formData.operations?.registrationExpiryDate,
       insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
-      insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
+      insurancePolicyNumber: formData.operations?.insurancePolicyNumber ?? "",
     },
     mode: "onBlur",
   })
@@ -242,7 +242,7 @@ function VehicleStepForm() {
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={true}>
       <DrawerTrigger asChild>
-        <Button>Add Vehicle</Button>
+        <FatButton>Add Vehicle</FatButton>
       </DrawerTrigger>
       <DrawerContent showHandle={false} className="h-dvh rounded-none!">
         <DrawerHeader className="px-0 pb-0">
@@ -261,7 +261,7 @@ function VehicleStepForm() {
 
         <DrawerFooter className="my-2 px-0 border-t">
           <div className="flex justify-between drawer-container gap-4">
-            <Button
+            <FatButton
               type="button"
               variant="outline"
               onClick={handleBack}
@@ -270,28 +270,28 @@ function VehicleStepForm() {
             >
               <ChevronLeft className="w-4 h-4" />
               {getPreviousButtonText()}
-            </Button>
+            </FatButton>
             <div className="flex-1"></div>
-            <Button
+            <FatButton
               type="button"
               variant="ghost"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-2 text-sky-700 bg-transparent hover:bg-transparent hover:underline hover:text-sky-600"
             >
               Cancel
-            </Button>
+            </FatButton>
 
             {currentStep < steps.length ? (
-              <Button
+              <FatButton
                 type="button"
                 onClick={handleNext}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 {getNextButtonText()}
                 <ChevronRight className="w-4 h-4" />
-              </Button>
+              </FatButton>
             ) : (
-              <Button
+              <FatButton
                 type="button"
                 onClick={handleSave}
                 disabled={createVehicle.isPending}
@@ -303,7 +303,7 @@ function VehicleStepForm() {
                   <Save className="w-4 h-4" />
                 )}
                 {createVehicle.isPending ? "Saving..." : "Save Vehicle"}
-              </Button>
+              </FatButton>
             )}
           </div>
         </DrawerFooter>

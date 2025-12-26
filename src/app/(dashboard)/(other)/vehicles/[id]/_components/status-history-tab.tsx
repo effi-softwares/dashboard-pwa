@@ -79,7 +79,9 @@ export function StatusHistoryTab({ statusHistory }: Props) {
                     </p>
                   )}
                   {entry.note && (
-                    <p className="text-sm mt-2 p-3 bg-muted rounded-md italic">"{entry.note}"</p>
+                    <p className="text-sm mt-2 p-3 bg-muted rounded-md italic">
+                      &quot;{entry.note}&quot;
+                    </p>
                   )}
                 </div>
               </div>

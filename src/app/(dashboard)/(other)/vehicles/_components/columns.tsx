@@ -129,12 +129,8 @@ export const buildVehicleColumns = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[200px]">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <a href={`/vehicles/${row.original.id}`}>View Details</a>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuLabel>Change status</DropdownMenuLabel>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
           >

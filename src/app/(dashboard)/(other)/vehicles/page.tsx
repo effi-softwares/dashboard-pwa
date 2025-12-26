@@ -1,10 +1,8 @@
 import { VehicleTable } from "./_components/vehicle-table"
-import VehicleFormClient from "./forms/index.client"
 
 export default async function DemoPage() {
   return (
-    <div className="container">
-      <VehicleFormClient />
+    <div className="px-4 md:px-6 h-full flex flex-col overflow-hidden">
       <VehicleTable />
     </div>
   )

@@ -13,14 +13,10 @@ import {
 import { AlertCircle, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { FatButton } from "@/components/ui/fat-button"
+import { FatInput } from "@/components/ui/fat-input"
+import { FatSelect, FatSelectTrigger } from "@/components/ui/fat-select"
+import { SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -36,6 +32,7 @@ import {
   VehicleStatusEnum,
 } from "@/zod/vehicle-form"
 
+import VehicleFormClient from "../forms/index.client"
 import { buildVehicleColumns, VehicleRow } from "./columns"
 
 type VehiclesResponse = {
@@ -95,7 +92,7 @@ export function VehicleTable() {
       }
       return res.json()
     },
-    keepPreviousData: true,
+    placeholderData: previousData => previousData,
     staleTime: 5 * 60 * 1000,
   })
 
@@ -154,9 +151,9 @@ export function VehicleTable() {
   })
 
   return (
-    <div className="w-full space-y-4">
-      <div className="flex flex-wrap gap-3 items-center">
-        <Input
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-wrap gap-3 items-center py-4 px-4 shrink-0">
+        <FatInput
           placeholder="Search brand, model, plate, VIN"
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
@@ -165,16 +162,16 @@ export function VehicleTable() {
           }}
           className="w-full sm:w-[320px] h-11 text-base"
         />
-        <Button onClick={handleSearch} className="h-11 px-5" variant="default">
+        <FatButton onClick={handleSearch} className="h-11 px-5" variant="default">
           {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
-        </Button>
-        <Select
+        </FatButton>
+        <FatSelect
           value={statusFilter ?? "all"}
           onValueChange={val => setStatusFilter(val === "all" ? undefined : val)}
         >
-          <SelectTrigger className="h-11 w-[170px]">
+          <FatSelectTrigger className="h-11 w-[170px]">
             <SelectValue placeholder="Status" />
-          </SelectTrigger>
+          </FatSelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
             {VehicleStatusEnum.options.map(option => (
@@ -183,14 +180,15 @@ export function VehicleTable() {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
-        <Select
+        </FatSelect>
+
+        <FatSelect
           value={fuelFilter ?? "all"}
           onValueChange={val => setFuelFilter(val === "all" ? undefined : val)}
         >
-          <SelectTrigger className="h-11 w-[150px]">
+          <FatSelectTrigger className="h-11 w-[150px]">
             <SelectValue placeholder="Fuel" />
-          </SelectTrigger>
+          </FatSelectTrigger>
           <SelectContent>
             <SelectItem value="all">All fuels</SelectItem>
             {FuelTypeEnum.options.map(option => (
@@ -199,14 +197,15 @@ export function VehicleTable() {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
-        <Select
+        </FatSelect>
+
+        <FatSelect
           value={transmissionFilter ?? "all"}
           onValueChange={val => setTransmissionFilter(val === "all" ? undefined : val)}
         >
-          <SelectTrigger className="h-11 w-[170px]">
+          <FatSelectTrigger className="h-11 w-[170px]">
             <SelectValue placeholder="Transmission" />
-          </SelectTrigger>
+          </FatSelectTrigger>
           <SelectContent>
             <SelectItem value="all">All transmissions</SelectItem>
             {TransmissionEnum.options.map(option => (
@@ -215,76 +214,81 @@ export function VehicleTable() {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
-        <Input
+        </FatSelect>
+        <FatInput
           placeholder="Type (SUV, Sedan...)"
           value={vehicleTypeFilter}
           onChange={e => setVehicleTypeFilter(e.target.value)}
           className="w-full sm:w-[200px] h-11 text-base"
         />
+        <div className="flex-1"></div>
+        <VehicleFormClient />
       </div>
 
-      <div className="rounded-md border overflow-visible">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} className="text-sm">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Loading vehicles...
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : isError ? (
-              <TableRow>
-                <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
-                  <div className="flex items-center justify-center gap-2 text-destructive">
-                    <AlertCircle className="h-4 w-4" /> Failed to load vehicles
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} className="touch-manipulation">
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id} className="text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      <div className="flex-1 min-h-0 border rounded-md mx-4 flex flex-col overflow-hidden">
+        <div className="overflow-auto flex-1">
+          <Table>
+            <TableHeader className="sticky top-0 bg-background shadow-sm">
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <TableHead key={header.id} className="text-sm bg-background">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading vehicles...
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : isError ? (
+                <TableRow>
+                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                    <div className="flex items-center justify-center gap-2 text-destructive">
+                      <AlertCircle className="h-4 w-4" /> Failed to load vehicles
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id} className="touch-manipulation">
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id} className="text-sm">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 justify-between py-2">
+      <div className="flex flex-wrap items-center gap-3 justify-between py-4 px-4 shrink-0 bg-background">
         <div className="text-muted-foreground text-sm">
           Page {pagination.pageIndex + 1} of {data?.totalPages ?? "-"} • {data?.total ?? 0} vehicles
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            className="h-10 px-4"
+            size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage() || isFetching}
           >
@@ -292,7 +296,7 @@ export function VehicleTable() {
           </Button>
           <Button
             variant="outline"
-            className="h-10 px-4"
+            size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage() || isFetching}
           >
