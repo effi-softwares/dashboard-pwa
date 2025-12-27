@@ -57,6 +57,13 @@
       "when": 1766468442183,
       "tag": "0007_yummy_proemial_gods",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766810915684,
+      "tag": "0008_white_killer_shrike",
+      "breakpoints": true
     }
   ]
 }

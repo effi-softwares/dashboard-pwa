@@ -3,6 +3,15 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.public.blob.vercel-storage.com",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+  },
   async headers() {
     return [
       {

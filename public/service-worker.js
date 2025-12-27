@@ -25,6 +25,17 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+
+  // Skip caching for upload-related requests
+  if (
+    url.pathname.startsWith("/api/uploads/") ||
+    url.hostname.includes("blob.vercel-storage.com")
+  ) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   if (event.request.mode === "navigate") {
     event.respondWith(
       (async () => {
