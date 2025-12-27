@@ -38,12 +38,7 @@ function ImageUploadSection({
     setSelectedFile(file)
     setProgress(0)
     try {
-      // mark upload in-flight
-      // Upload to Blob
-      // Upload to Blob
       const result = await uploadMutation.mutateAsync(file)
-
-      // Persist metadata to DB
       const mediaRecord = await persistMediaRecord({
         type: "image",
         url: result.url,
@@ -123,7 +118,6 @@ function ImagesForm({ form }: ImagesFormProps) {
       [type]: { mediaId, url, blurDataURL },
     }))
 
-    // Update form values
     if (type === "front") {
       form.setValue("frontImageUrl", url)
       form.setValue("frontImageId", mediaId)
