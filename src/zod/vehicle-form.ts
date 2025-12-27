@@ -61,6 +61,15 @@ const limitedMileageSchema = z.object({
   measureUnit: z.enum(["km", "miles"]).default("km"),
 })
 
+export const vehicleImagesSchema = z.object({
+  frontImageUrl: z.string().url("Front image is required").optional(),
+  backImageUrl: z.string().url("Back image is required").optional(),
+  interiorImageUrl: z.string().url("Interior image is required").optional(),
+  frontImageId: z.string().uuid("Invalid front image id").optional(),
+  backImageId: z.string().uuid("Invalid back image id").optional(),
+  interiorImageId: z.string().uuid("Invalid interior image id").optional(),
+})
+
 export const vehicleRatesSchema = z.object({
   rates: z.array(
     z
@@ -88,6 +97,7 @@ export const vehicleRatesSchema = z.object({
 
 export const vehicleSchema = z.object({
   identity: vehicleIdentitySchema,
+  images: vehicleImagesSchema,
   specs: vehicleSpecsSchema,
   operations: vehicleOperationsSchema,
   rates: vehicleRatesSchema,
@@ -107,6 +117,9 @@ export type PricingModelInput = z.input<typeof PricingModelEnum>
 
 export type VehicleIdentity = z.infer<typeof vehicleIdentitySchema>
 export type VehicleIdentityInput = z.input<typeof vehicleIdentitySchema>
+
+export type VehicleImages = z.infer<typeof vehicleImagesSchema>
+export type VehicleImagesInput = z.input<typeof vehicleImagesSchema>
 
 export type VehicleFeatures = z.infer<typeof vehicleFeaturesSchema>
 export type VehicleFeaturesInput = z.input<typeof vehicleFeaturesSchema>

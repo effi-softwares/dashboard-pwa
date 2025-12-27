@@ -1,13 +1,15 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
 import { ArrowLeft } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
+import { BlobImage } from "@/components/ui/blob-image"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/db/db"
-import { user, vehicleStatusTable, vehicleTable } from "@/db/schemas"
+import { mediaTable, user, vehicleMediaTable, vehicleStatusTable, vehicleTable } from "@/db/schemas"
 import { requireAuth } from "@/lib/auth/get-session"
 
 import { VehicleDetailsTabs } from "./_components/vehicle-details-tabs"
@@ -50,6 +52,16 @@ type StatusHistoryEntry = {
 type VehicleDetailResponse = {
   vehicle: VehicleDetail
   statusHistory: StatusHistoryEntry[]
+  images: VehicleImage[]
+}
+
+type VehicleImage = {
+  id: string
+  url: string
+  blurDataURL: string | null
+  role: "front" | "back" | "interior"
+  sortOrder: number
+  createdAt: string | null
 }
 
 async function getVehicleDetails(id: string): Promise<VehicleDetailResponse | null> {
@@ -106,6 +118,31 @@ async function getVehicleDetails(id: string): Promise<VehicleDetailResponse | nu
       .where(eq(vehicleStatusTable.vehicleId, id))
       .orderBy(desc(vehicleStatusTable.statusUpdatedAt))
 
+    const images = await dbClient
+      .select({
+        id: mediaTable.id,
+        url: mediaTable.url,
+        blurDataURL: mediaTable.blurDataURL,
+        role: vehicleMediaTable.role,
+        sortOrder: vehicleMediaTable.sortOrder,
+        createdAt: vehicleMediaTable.createdAt,
+      })
+      .from(vehicleMediaTable)
+      .innerJoin(mediaTable, eq(vehicleMediaTable.mediaId, mediaTable.id))
+      .where(
+        and(
+          eq(vehicleMediaTable.vehicleId, id),
+          eq(vehicleMediaTable.isActive, true),
+          eq(mediaTable.type, "image"),
+        ),
+      )
+      .orderBy(vehicleMediaTable.sortOrder, desc(vehicleMediaTable.createdAt))
+
+    const serializedImages = images.map(image => ({
+      ...image,
+      createdAt: image.createdAt?.toISOString() ?? null,
+    }))
+
     return {
       vehicle: {
         ...vehicle,
@@ -116,6 +153,7 @@ async function getVehicleDetails(id: string): Promise<VehicleDetailResponse | nu
         ...entry,
         statusUpdatedAt: entry.statusUpdatedAt?.toISOString() ?? null,
       })),
+      images: serializedImages,
     }
   } catch (error) {
     console.error("Failed to fetch vehicle details:", error)
@@ -131,8 +169,9 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
     notFound()
   }
 
-  const { vehicle, statusHistory } = data
+  const { vehicle, statusHistory, images } = data
   const currentStatus = statusHistory[0]?.status ?? "Unknown"
+  const hasImages = images.length > 0
 
   return (
     <div className="container max-w-5xl py-6 space-y-6">
@@ -166,6 +205,42 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Vehicle Images</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {hasImages ? (
+            <div className="grid gap-4 md:grid-cols-3">
+              {images.map(image => (
+                <div
+                  key={image.id}
+                  className="relative overflow-hidden rounded-lg border bg-muted"
+                  aria-label={`Vehicle image (${image.role})`}
+                >
+                  <BlobImage
+                    src={image.url}
+                    blurDataURL={image.blurDataURL ?? undefined}
+                    alt={`Vehicle image (${image.role})`}
+                    width={800}
+                    height={600}
+                    className="h-56 w-full object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className="px-3 py-2 border-t bg-background text-sm font-medium capitalize">
+                    {image.role}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No images uploaded for this vehicle yet.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <VehicleDetailsTabs vehicle={vehicle} statusHistory={statusHistory} />
     </div>

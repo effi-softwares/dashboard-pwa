@@ -1,9 +1,7 @@
 "use server"
 
-import { and, eq } from "drizzle-orm"
-
 import { db as getDb } from "@/db/db"
-import { mediaLinksTable, mediaTable } from "@/db/schemas"
+import { mediaTable, vehicleMediaTable } from "@/db/schemas"
 import { vehicleStatusTable, vehicleTable } from "@/db/schemas/vehicle-schema"
 import { requireAuth } from "@/lib/auth/get-session"
 import { toPersistence } from "@/lib/mappers/vehicle-mapper"
@@ -17,6 +15,7 @@ export async function createVehicleAction(rawData: Vehicle) {
   }
 
   const dbData = toPersistence(parsed.data)
+  const images = parsed.data.images
   const db = getDb()
   const [newVehicle] = await db.insert(vehicleTable).values(dbData).returning()
   await db.insert(vehicleStatusTable).values({
@@ -26,43 +25,42 @@ export async function createVehicleAction(rawData: Vehicle) {
     changedBy: session.user.id,
   })
 
+  // Link any uploaded images to this vehicle with explicit roles
+  const linkOps: Promise<unknown>[] = []
+  if (images?.frontImageId) {
+    linkOps.push(linkVehicleMedia(newVehicle.id, images.frontImageId, "front", 0))
+  }
+  if (images?.backImageId) {
+    linkOps.push(linkVehicleMedia(newVehicle.id, images.backImageId, "back", 1))
+  }
+  if (images?.interiorImageId) {
+    linkOps.push(linkVehicleMedia(newVehicle.id, images.interiorImageId, "interior", 2))
+  }
+  if (linkOps.length > 0) {
+    await Promise.all(linkOps)
+  }
+
   return newVehicle
 }
 
 export async function linkVehicleMedia(
   vehicleId: string,
   mediaId: string,
-  role: "primary" | "gallery" | "document" = "gallery",
+  role: "front" | "back" | "interior",
   sortOrder = 0,
 ) {
   await requireAuth()
   const db = getDb()
   const [link] = await db
-    .insert(mediaLinksTable)
+    .insert(vehicleMediaTable)
     .values({
       mediaId,
-      entityType: "vehicle",
-      entityId: vehicleId,
+      vehicleId,
       role,
       sortOrder,
     })
     .returning()
   return link
-}
-
-export async function unlinkVehicleMedia(vehicleId: string, mediaId: string) {
-  await requireAuth()
-  const db = getDb()
-  await db
-    .delete(mediaLinksTable)
-    .where(
-      and(
-        eq(mediaLinksTable.mediaId, mediaId),
-        eq(mediaLinksTable.entityType, "vehicle"),
-        eq(mediaLinksTable.entityId, vehicleId),
-      ),
-    )
-  return { success: true }
 }
 
 export async function persistMediaRecord(data: {

@@ -22,6 +22,8 @@ import type { Vehicle } from "@/zod/vehicle-form"
 import {
   VehicleIdentityInput,
   vehicleIdentitySchema,
+  VehicleImagesInput,
+  vehicleImagesSchema,
   VehicleInput,
   VehicleOperationsInput,
   vehicleOperationsSchema,
@@ -32,6 +34,7 @@ import {
 } from "@/zod/vehicle-form"
 
 import IdentityForm from "./identity-form"
+import ImagesForm from "./images-form"
 import OperationsForm from "./operations-form"
 import RateForm from "./rate-form"
 import SpecForm from "./spec-form"
@@ -42,6 +45,7 @@ export interface StepFormItem {
   nextButtonText?: string
   form:
     | UseFormReturn<VehicleIdentityInput>
+    | UseFormReturn<VehicleImagesInput>
     | UseFormReturn<VehicleSpecsInput>
     | UseFormReturn<VehicleOperationsInput>
     | UseFormReturn<VehicleRatesInput>
@@ -67,6 +71,19 @@ function VehicleStepForm() {
       licensePlate: formData.identity?.licensePlate ?? "",
       color: formData.identity?.color,
       isBrandNew: formData.identity?.isBrandNew ?? false,
+    },
+    mode: "onBlur",
+  })
+
+  const imagesForm = useForm<VehicleImagesInput>({
+    resolver: zodResolver(vehicleImagesSchema),
+    defaultValues: {
+      frontImageUrl: formData.images?.frontImageUrl,
+      backImageUrl: formData.images?.backImageUrl,
+      interiorImageUrl: formData.images?.interiorImageUrl,
+      frontImageId: formData.images?.frontImageId,
+      backImageId: formData.images?.backImageId,
+      interiorImageId: formData.images?.interiorImageId,
     },
     mode: "onBlur",
   })
@@ -108,14 +125,22 @@ function VehicleStepForm() {
       {
         title: "Vehicle Info",
         icon: Car,
-        nextButtonText: "Continue to Details",
+        nextButtonText: "Continue to Images",
         form: identityForm,
         formComponent: <IdentityForm form={identityForm} />,
       },
       {
-        title: "Specifications",
+        title: "Vehicle Images",
         icon: Car,
         previousButtonText: "Back to Info",
+        nextButtonText: "Continue to Details",
+        form: imagesForm,
+        formComponent: <ImagesForm form={imagesForm} />,
+      },
+      {
+        title: "Specifications",
+        icon: Car,
+        previousButtonText: "Back to Images",
         nextButtonText: "Continue to Operations",
         form: specsForm,
         formComponent: <SpecForm form={specsForm} />,
@@ -137,7 +162,7 @@ function VehicleStepForm() {
         formComponent: <RateForm form={ratesForm} />,
       },
     ],
-    [identityForm, specsForm, operationsForm, ratesForm],
+    [identityForm, imagesForm, specsForm, operationsForm, ratesForm],
   )
 
   const getCurrentForm = () => {
@@ -168,12 +193,15 @@ function VehicleStepForm() {
           setFormData(prev => ({ ...prev, identity: data as VehicleIdentityInput }))
           break
         case 2:
-          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
+          setFormData(prev => ({ ...prev, images: data as VehicleImagesInput }))
           break
         case 3:
-          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
           break
         case 4:
+          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          break
+        case 5:
           setFormData(prev => ({ ...prev, rates: data as VehicleRatesInput }))
           break
       }
@@ -211,12 +239,14 @@ function VehicleStepForm() {
     if (isValid) {
       try {
         const identity = identityForm.getValues()
+        const images = imagesForm.getValues()
         const specs = specsForm.getValues()
         const operations = operationsForm.getValues()
         const rates = ratesForm.getValues()
 
         const payloadInput: VehicleInput = {
           identity,
+          images,
           specs,
           operations,
           rates,
@@ -228,6 +258,7 @@ function VehicleStepForm() {
         setIsOpen(false)
         setCurrentStep(1)
         identityForm.reset()
+        imagesForm.reset()
         specsForm.reset()
         operationsForm.reset()
         ratesForm.reset()
