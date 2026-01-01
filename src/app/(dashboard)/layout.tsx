@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { layoutPreferences } from "@/config/app-config"
 import { getSession } from "@/lib/auth/get-session"
 import { cn } from "@/lib/utils"
+import { BreadcrumbProvider } from "@/providers/breadcrumb-provider"
 import { NewRentalProvider } from "@/providers/new-rental-provider"
 
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -25,10 +26,12 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
           "max-[113rem]:peer-data-[variant=inset]:mr-2! min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-auto!",
         )}
       >
-        <AppHeader />
-        <div className="flex-1 min-h-0">
-          <NewRentalProvider>{children}</NewRentalProvider>
-        </div>
+        <BreadcrumbProvider>
+          <AppHeader />
+          <div className="flex-1 min-h-0">
+            <NewRentalProvider>{children}</NewRentalProvider>
+          </div>
+        </BreadcrumbProvider>
       </SidebarInset>
     </SidebarProvider>
   )

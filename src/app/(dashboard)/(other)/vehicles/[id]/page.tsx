@@ -12,6 +12,7 @@ import { db } from "@/db/db"
 import { mediaTable, user, vehicleMediaTable, vehicleStatusTable, vehicleTable } from "@/db/schemas"
 import { requireAuth } from "@/lib/auth/get-session"
 
+import VehicleBreadcrumbs from "./_components/vehicle-breadcrumbs"
 import { VehicleDetailsTabs } from "./_components/vehicle-details-tabs"
 
 type VehicleDetail = {
@@ -175,6 +176,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="container max-w-5xl py-6 space-y-6">
+      <VehicleBreadcrumbs title={`${vehicle.brand} ${vehicle.model}`} />
       <div>
         <Link href="/vehicles">
           <Button variant="ghost" className="mb-4 h-10" size="sm">
