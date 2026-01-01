@@ -1,10 +1,16 @@
+import BreadcrumbSetter from "@/components/breadcrumb-setter"
+
 import { VehicleTable } from "./_components/vehicle-table"
-import VehiclesBreadcrumbs from "./_components/vehicles-breadcrumbs"
 
 export default async function DemoPage() {
   return (
     <>
-      <VehiclesBreadcrumbs />
+      <BreadcrumbSetter
+        items={[
+          { href: "/", title: "Dashboard" },
+          { href: "/vehicles", title: "Vehicles" },
+        ]}
+      />
       <VehicleTable />
     </>
   )

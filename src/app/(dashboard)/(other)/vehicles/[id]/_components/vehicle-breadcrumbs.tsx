@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 
-import { useBreadcrumbs } from "@/providers/breadcrumb-provider"
+import BreadcrumbSetter from "@/components/breadcrumb-setter"
 
 type VehicleBreadcrumbsProps = {
   title: string
@@ -11,21 +10,16 @@ type VehicleBreadcrumbsProps = {
 
 function VehicleBreadcrumbs({ title }: VehicleBreadcrumbsProps) {
   const pathname = usePathname()
-  const { setBreadcrumbs, clearBreadcrumbs } = useBreadcrumbs()
 
-  useEffect(() => {
-    if (!pathname) {
-      return
-    }
-    setBreadcrumbs([
-      { href: "/", title: "Dashboard" },
-      { href: "/vehicles", title: "Vehicles" },
-      { href: pathname, title },
-    ])
-    return () => clearBreadcrumbs()
-  }, [pathname, title, setBreadcrumbs, clearBreadcrumbs])
-
-  return null
+  return (
+    <BreadcrumbSetter
+      items={[
+        { href: "/", title: "Dashboard" },
+        { href: "/vehicles", title: "Vehicles" },
+        { href: pathname, title },
+      ]}
+    />
+  )
 }
 
 export default VehicleBreadcrumbs
