@@ -19,7 +19,7 @@ const BreadcrumbList = React.forwardRef<HTMLOListElement, React.HTMLAttributes<H
     <ol
       ref={ref}
       className={cn(
-        "flex flex-wrap items-center gap-2 break-words text-sm text-muted-foreground",
+        "flex flex-wrap items-center gap-2 wrap-break-word text-sm text-muted-foreground",
         className,
       )}
       {...props}
@@ -70,8 +70,17 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HT
 )
 BreadcrumbPage.displayName = "BreadcrumbPage"
 
-const BreadcrumbSeparator = ({ children, className, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
-  <li role="presentation" aria-hidden="true" className={cn("text-muted-foreground/60", className)} {...props}>
+const BreadcrumbSeparator = ({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLLIElement>) => (
+  <li
+    role="presentation"
+    aria-hidden="true"
+    className={cn("text-muted-foreground/60", className)}
+    {...props}
+  >
     {children ?? <ChevronRight className="h-4 w-4" />}
   </li>
 )
@@ -95,10 +104,10 @@ BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis"
 
 export {
   Breadcrumb,
-  BreadcrumbList,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
 }

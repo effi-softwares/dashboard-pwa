@@ -64,7 +64,7 @@ export async function GET(request: Request) {
       eq(latestStatus.rowNumber, 1),
     )
 
-    const filters = [] as any[]
+    const filters = []
 
     if (parsed.search) {
       const term = `%${parsed.search}%`
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
       filters.push(eq(vehicleTable.transmission, parsed.transmission))
     }
     if (parsed.status) {
-      filters.push(eq((latestStatus as any).status, parsed.status))
+      filters.push(eq(latestStatus.status, parsed.status))
     }
 
     const whereClause = filters.length ? and(...filters) : undefined
@@ -116,8 +116,8 @@ export async function GET(request: Request) {
           return direction === "asc" ? vehicleTable.year : desc(vehicleTable.year)
         case "statusUpdatedAt":
           return direction === "asc"
-            ? (latestStatus as any).statusUpdatedAt
-            : desc((latestStatus as any).statusUpdatedAt)
+            ? latestStatus.statusUpdatedAt
+            : desc(latestStatus.statusUpdatedAt)
         default:
           return direction === "asc" ? vehicleTable.createdAt : desc(vehicleTable.createdAt)
       }

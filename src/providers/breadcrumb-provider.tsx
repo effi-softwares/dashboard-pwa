@@ -40,7 +40,9 @@ function BreadcrumbProvider({ children }: { children: React.ReactNode }) {
     setCustomBreadcrumbs(null)
   }, [])
 
-  const breadcrumbs = customBreadcrumbs ?? []
+  const breadcrumbs = useMemo(() => {
+    return customBreadcrumbs ?? []
+  }, [customBreadcrumbs])
 
   const value = useMemo(
     () => ({

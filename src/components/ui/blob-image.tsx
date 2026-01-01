@@ -18,5 +18,5 @@ export function BlobImage({ src, blurDataURL, ...props }: BlobImageProps) {
     imageProps.blurDataURL = blurDataURL
   }
 
-  return <Image {...imageProps} />
+  return <Image {...imageProps} alt={props.alt ?? ""} />
 }
