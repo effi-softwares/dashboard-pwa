@@ -4,3 +4,4 @@ dist
 build
 coverage
 components/ui/**
+next-env.d.ts

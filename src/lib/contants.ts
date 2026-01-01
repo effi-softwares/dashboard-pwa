@@ -27,3 +27,17 @@ export const VEHICLE_COLORS = [
   { name: "BEIGE", label: "Beige", hex: "#D7CCC8", textColor: "#000000" },
   { name: "GOLD", label: "Gold / Champagne", hex: "#C9B037", textColor: "#000000" },
 ]
+
+export const VEHICLE_STATUSES = {
+  AVAILABLE: "Available",
+  RENTED: "Rented",
+  MAINTENANCE: "Maintenance",
+  RETIRED: "Retired",
+  UNKNOWN: "Unknown",
+} as const
+
+export const IMAGE_ROLES = {
+  FRONT: "front",
+  BACK: "back",
+  INTERIOR: "interior",
+} as const

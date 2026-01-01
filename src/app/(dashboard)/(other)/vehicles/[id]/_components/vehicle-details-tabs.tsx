@@ -1,45 +1,11 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { StatusHistoryEntry, VehicleDetail } from "@/types/vehicle"
 
 import { IdentityTab } from "./identity-tab"
 import { SpecsTab } from "./specs-tab"
 import { StatusHistoryTab } from "./status-history-tab"
-
-type VehicleDetail = {
-  id: string
-  brand: string
-  model: string
-  vehicleType: string
-  year: number
-  licensePlate: string
-  vin: string
-  colorName: string
-  colorLabel: string
-  colorHex: string
-  isBrandNew: boolean
-  transmission: string
-  fuelType: string
-  seats: number
-  doors: number
-  baggageCapacity: number
-  hasAC: boolean
-  hasNavigation: boolean
-  hasBluetooth: boolean
-  isPetFriendly: boolean
-  createdAt: string | null
-  updatedAt: string | null
-}
-
-type StatusHistoryEntry = {
-  id: string
-  status: string
-  statusUpdatedAt: string | null
-  note: string | null
-  changedBy: string | null
-  changedByName: string | null
-  changedByEmail: string | null
-}
 
 type Props = {
   vehicle: VehicleDetail
