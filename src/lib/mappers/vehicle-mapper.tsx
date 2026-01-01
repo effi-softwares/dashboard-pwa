@@ -57,5 +57,7 @@ export function toDomain(dbRecord: VehicleDbSelect): Vehicle {
         isPetFriendly: dbRecord.isPetFriendly,
       },
     },
+    // Images are not persisted yet; keep placeholder shape for the domain model
+    images: {},
   }
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 import { desc, eq } from "drizzle-orm"
 
@@ -6,9 +6,11 @@ import { db } from "@/db/db"
 import { user, vehicleStatusTable, vehicleTable } from "@/db/schemas"
 import { requireAuth } from "@/lib/auth/get-session"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAuth()
+
+    const { id } = await params
 
     const dbClient = db()
 
@@ -38,7 +40,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         updatedAt: vehicleTable.updatedAt,
       })
       .from(vehicleTable)
-      .where(eq(vehicleTable.id, params.id))
+      .where(eq(vehicleTable.id, id))
       .limit(1)
 
     if (!vehicle) {
@@ -57,7 +59,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       })
       .from(vehicleStatusTable)
       .leftJoin(user, eq(vehicleStatusTable.changedBy, user.id))
-      .where(eq(vehicleStatusTable.vehicleId, params.id))
+      .where(eq(vehicleStatusTable.vehicleId, id))
       .orderBy(desc(vehicleStatusTable.statusUpdatedAt))
 
     const response = {

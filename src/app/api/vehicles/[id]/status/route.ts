@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 import { eq } from "drizzle-orm"
 import { z } from "zod"
@@ -13,9 +13,10 @@ const bodySchema = z.object({
   note: z.string().max(300).optional(),
 })
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireAuth()
+    const { id } = await params
     const body = await request.json()
     const parsed = bodySchema.parse(body)
 
@@ -24,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const [vehicle] = await dbClient
       .select({ id: vehicleTable.id })
       .from(vehicleTable)
-      .where(eq(vehicleTable.id, params.id))
+      .where(eq(vehicleTable.id, id))
       .limit(1)
 
     if (!vehicle) {
