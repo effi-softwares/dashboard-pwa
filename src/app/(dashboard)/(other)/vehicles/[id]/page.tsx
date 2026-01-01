@@ -1,12 +1,9 @@
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { and, desc, eq } from "drizzle-orm"
-import { ArrowLeft } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { BlobImage } from "@/components/ui/blob-image"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/db/db"
 import { mediaTable, user, vehicleMediaTable, vehicleStatusTable, vehicleTable } from "@/db/schemas"
@@ -177,33 +174,25 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="container max-w-5xl py-6 space-y-6">
       <VehicleBreadcrumbs title={`${vehicle.brand} ${vehicle.model}`} />
-      <div>
-        <Link href="/vehicles">
-          <Button variant="ghost" className="mb-4 h-10" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Vehicles
-          </Button>
-        </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight">{vehicle.licensePlate}</h1>
-              {vehicle.isBrandNew && (
-                <Badge variant="default" className="text-xs">
-                  Brand New
-                </Badge>
-              )}
-            </div>
-            <p className="text-muted-foreground text-lg">
-              {vehicle.brand} {vehicle.model} • {vehicle.vehicleType} • {vehicle.year}
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Current Status:</span>
-              <Badge variant="secondary" className="text-sm px-3 py-1">
-                {currentStatus}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">{vehicle.licensePlate}</h1>
+            {vehicle.isBrandNew && (
+              <Badge variant="default" className="text-xs">
+                Brand New
               </Badge>
-            </div>
+            )}
+          </div>
+          <p className="text-muted-foreground text-lg">
+            {vehicle.brand} {vehicle.model} • {vehicle.vehicleType} • {vehicle.year}
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Current Status:</span>
+            <Badge variant="secondary" className="text-sm px-3 py-1">
+              {currentStatus}
+            </Badge>
           </div>
         </div>
       </div>
