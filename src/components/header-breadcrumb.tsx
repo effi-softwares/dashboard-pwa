@@ -2,7 +2,7 @@
 
 import { Fragment } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import { ChevronLeft } from "lucide-react"
 
@@ -19,6 +19,7 @@ import { useBreadcrumbs } from "@/providers/breadcrumb-provider"
 
 function HeaderBreadcrumb() {
   const router = useRouter()
+  const pathname = usePathname()
   const { breadcrumbs } = useBreadcrumbs()
 
   const handleBack = () => {
@@ -30,15 +31,17 @@ function HeaderBreadcrumb() {
   }
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon-lg"
-        onClick={handleBack}
-        aria-label="Go back"
-        className="text-muted-foreground"
-      >
-        <ChevronLeft className="size-4" />
-      </Button>
+      {pathname !== "/" && (
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          onClick={handleBack}
+          aria-label="Go back"
+          className="text-muted-foreground"
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+      )}
       {breadcrumbs.length > 0 && (
         <Breadcrumb className="flex min-w-0">
           <BreadcrumbList className="min-w-0">
