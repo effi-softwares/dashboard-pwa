@@ -4,7 +4,7 @@ import { VehicleTable } from "./_components/vehicle-table"
 
 export default async function DemoPage() {
   return (
-    <>
+    <div className="space-y-6">
       <BreadcrumbSetter
         items={[
           { href: "/", title: "Dashboard" },
@@ -12,6 +12,6 @@ export default async function DemoPage() {
         ]}
       />
       <VehicleTable />
-    </>
+    </div>
   )
 }

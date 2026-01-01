@@ -162,8 +162,8 @@ export function VehicleTable() {
   })
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex flex-wrap gap-3 items-center py-4 px-4 shrink-0">
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex flex-wrap gap-3 items-center shrink-0">
         <FatInput
           placeholder="Search brand, model, plate, VIN"
           value={searchInput}
@@ -236,7 +236,7 @@ export function VehicleTable() {
         <VehicleFormClient />
       </div>
 
-      <div className="flex-1 min-h-0 border rounded-md mx-4 flex flex-col overflow-hidden">
+      <div className="flex-1 min-h-0 border rounded-md flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto overflow-x-auto">
           <Table>
             <TableHeader className="sticky top-0 bg-background shadow-sm">
@@ -296,7 +296,7 @@ export function VehicleTable() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 justify-between py-4 px-4 shrink-0 bg-background">
+      <div className="flex flex-wrap items-center gap-3 justify-between shrink-0 bg-background">
         <div className="text-muted-foreground text-sm">
           Page {pagination.pageIndex + 1} of {data?.totalPages ?? "-"} • {data?.total ?? 0} vehicles
         </div>

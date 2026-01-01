@@ -20,7 +20,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
   const { vehicle, statusHistory, images, currentStatus } = data
 
   return (
-    <div className="container max-w-5xl py-6 space-y-6">
+    <div className="space-y-6">
       <VehicleBreadcrumbs title={`${vehicle.brand} ${vehicle.model}`} />
       <VehicleHeader vehicle={vehicle} currentStatus={currentStatus} />
       <VehicleImages images={images} />
