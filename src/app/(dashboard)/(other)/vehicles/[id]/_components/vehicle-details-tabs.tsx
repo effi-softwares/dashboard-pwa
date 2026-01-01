@@ -1,5 +1,7 @@
 "use client"
 
+import { useMemo } from "react"
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { StatusHistoryEntry, VehicleDetail } from "@/types/vehicle"
 
@@ -12,32 +14,46 @@ type Props = {
   statusHistory: StatusHistoryEntry[]
 }
 
+export type Tab = {
+  label: string
+  value: string
+  tab: React.ReactNode
+}
+
 export function VehicleDetailsTabs({ vehicle, statusHistory }: Props) {
+  const vehicleTabs = useMemo(
+    () => [
+      { label: "Availability", value: "availability", tab: null },
+      { label: "Rates", value: "rates", tab: null },
+      { label: "Info", value: "identity", tab: <IdentityTab vehicle={vehicle} /> },
+      { label: "Specs", value: "specs", tab: <SpecsTab vehicle={vehicle} /> },
+      { label: "Gallery", value: "gallery", tab: null },
+      {
+        label: "Status History",
+        value: "history",
+        tab: <StatusHistoryTab statusHistory={statusHistory} />,
+      },
+    ],
+    [statusHistory, vehicle],
+  )
+
+  const defaultTab = useMemo(() => vehicleTabs[0].value, [vehicleTabs])
+
   return (
-    <Tabs defaultValue="identity" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 h-12 touch-manipulation">
-        <TabsTrigger value="identity" className="text-base">
-          Identity
-        </TabsTrigger>
-        <TabsTrigger value="specs" className="text-base">
-          Specifications
-        </TabsTrigger>
-        <TabsTrigger value="history" className="text-base">
-          Status History
-        </TabsTrigger>
+    <Tabs defaultValue={defaultTab} className="w-full">
+      <TabsList className="w-full touch-manipulation">
+        {vehicleTabs.map((tab: Tab) => (
+          <TabsTrigger key={tab.value} value={tab.value}>
+            {tab.label}
+          </TabsTrigger>
+        ))}
       </TabsList>
 
-      <TabsContent value="identity" className="mt-6">
-        <IdentityTab vehicle={vehicle} />
-      </TabsContent>
-
-      <TabsContent value="specs" className="mt-6">
-        <SpecsTab vehicle={vehicle} />
-      </TabsContent>
-
-      <TabsContent value="history" className="mt-6">
-        <StatusHistoryTab statusHistory={statusHistory} />
-      </TabsContent>
+      {vehicleTabs.map((tab: Tab) => (
+        <TabsContent key={tab.value} value={tab.value} className="mt-4">
+          {tab.tab}
+        </TabsContent>
+      ))}
     </Tabs>
   )
 }

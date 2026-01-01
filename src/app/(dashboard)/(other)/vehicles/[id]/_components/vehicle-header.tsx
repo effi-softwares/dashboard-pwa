@@ -1,15 +1,28 @@
 import { Badge } from "@/components/ui/badge"
-import type { VehicleDetail, VehicleStatus } from "@/types/vehicle"
+import { BlobImage } from "@/components/ui/blob-image"
+import type { VehicleDetail, VehicleImage, VehicleStatus } from "@/types/vehicle"
 
 interface VehicleHeaderProps {
   vehicle: VehicleDetail
+  vehicleFrontImage: VehicleImage
   currentStatus: VehicleStatus
 }
 
-export function VehicleHeader({ vehicle, currentStatus }: VehicleHeaderProps) {
+export function VehicleHeader({ vehicle, vehicleFrontImage, currentStatus }: VehicleHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div className="">
+      <div className="h-20 w-30 rounded-xl overflow-hidden border bg-muted">
+        <BlobImage
+          src={vehicleFrontImage.url}
+          blurDataURL={vehicleFrontImage.blurDataURL ?? undefined}
+          alt={`Vehicle image (${vehicleFrontImage.role})`}
+          width={800}
+          height={600}
+          className="h-20 w-30 object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+      </div>
+      <div className="space-y-2">
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{vehicle.licensePlate}</h1>
           {vehicle.isBrandNew && (
@@ -22,12 +35,10 @@ export function VehicleHeader({ vehicle, currentStatus }: VehicleHeaderProps) {
           {vehicle.brand} {vehicle.model} • {vehicle.vehicleType} • {vehicle.year}
         </p>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Current Status:</span>
-        <Badge variant="secondary" className="text-sm px-3 py-1">
-          {currentStatus}
-        </Badge>
-      </div>
+      <div className="flex-1"></div>
+      <Badge variant="secondary" className="text-sm px-3 py-1">
+        {currentStatus}
+      </Badge>
     </div>
   )
 }
