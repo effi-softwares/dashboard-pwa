@@ -5,9 +5,8 @@ import { UseFormReturn } from "react-hook-form"
 
 import SingleImageUploader, { onUploadCompleteOptions } from "@/components/single-image-uploader"
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import type { ImageFormType } from "@/types"
 import { VehicleImagesInput } from "@/zod/vehicle-form"
-
-type ImageType = "front" | "back" | "interior"
 
 type UploadedImages = {
   front?: Omit<onUploadCompleteOptions, "file">
@@ -24,7 +23,7 @@ function ImagesForm({ form }: ImagesFormProps) {
   const [uploadedImages, setUploadedImages] = useState<UploadedImages>({})
 
   const handleUploadComplete = (
-    type: ImageType,
+    type: ImageFormType,
     { id, url, blurDataURL }: Omit<onUploadCompleteOptions, "file">,
   ) => {
     setUploadedImages(prev => ({

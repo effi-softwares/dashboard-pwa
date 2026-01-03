@@ -4,16 +4,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import type { VehicleSpecUpdate } from "@/zod/vehicle-edit-forms"
 
-type UpdateVehicleSpecPayload = {
-  vehicleId: string
-  data: VehicleSpecUpdate
-}
-
 export function useUpdateVehicleSpec() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ vehicleId, data }: UpdateVehicleSpecPayload) => {
+    mutationFn: async ({ vehicleId, data }: { vehicleId: string; data: VehicleSpecUpdate }) => {
       const res = await fetch(`/api/vehicles/${vehicleId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

@@ -6,7 +6,7 @@ import { createVehicleAction } from "@/server/vehicle-action"
 import type { Vehicle } from "@/zod/vehicle-form"
 
 export function useCreateVehicle() {
-  return useMutation({
-    mutationFn: (payload: Vehicle) => createVehicleAction(payload),
-  })
+    return useMutation({
+        mutationFn: (payload: Vehicle) => createVehicleAction(payload),
+    })
 }

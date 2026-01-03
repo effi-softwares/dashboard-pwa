@@ -2,41 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 
-import type { StatusHistoryEntry, VehicleDetailsResponse, VehicleImage } from "@/types/vehicle"
-
-export interface VehiclesListParams {
-  page?: number
-  pageSize?: number
-  search?: string
-  status?: string
-  vehicleType?: string
-  fuelType?: string
-  transmission?: string
-  sortBy?: string
-  sortDir?: "asc" | "desc"
-}
-
-export interface VehiclesResponse {
-  data: Array<{
-    id: string
-    brand: string
-    model: string
-    year: number
-    licensePlate: string
-    vehicleType: string
-    currentStatus: string
-    fuelType: string
-    transmission: string
-  }>
-  page: number
-  pageSize: number
-  total: number
-  totalPages: number
-}
-
-/**
- * Hook to fetch list of vehicles with pagination and filters
- */
+import type { StatusHistoryEntry, VehicleDetailsResponse, VehicleImage } from "@/types"
+import type { VehiclesListParams, VehiclesResponse } from "@/types/api"
 export function useVehicles(params: VehiclesListParams = {}) {
   return useQuery<VehiclesResponse>({
     queryKey: [

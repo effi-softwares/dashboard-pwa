@@ -4,21 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { upload } from "@vercel/blob/client"
 
 import { persistMediaRecord } from "@/server/vehicle-action"
-
-type UploadOptions = {
-  onProgress?: (progress: number) => void
-}
-
-type UploadResult = {
-  id: string
-  url: string
-  blurDataURL?: string | null
-  width?: number
-  height?: number
-  mime?: string
-  size?: number
-  pathname?: string
-}
+import type { UploadOptions, UploadResult } from "@/types/api"
 
 async function generateBlurDataURL(file: File): Promise<string | null> {
   if (!file.type.startsWith("image/")) return null
