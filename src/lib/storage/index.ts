@@ -1,7 +1,9 @@
-import { BlobStorage } from "./providers/blob"
-import type { StorageService } from "./storage"
+import { BlobStorage } from "./blob"
+export interface StorageService {
+  getPublicUrl(pathname: string): string
+  deleteByUrl(url: string): Promise<{ success: boolean }>
+}
 
 export function getStorage(): StorageService {
-  // Future: switch on env STORAGE_PROVIDER
   return new BlobStorage()
 }

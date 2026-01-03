@@ -4,8 +4,6 @@ import type { StorageService } from "../storage"
 
 export class BlobStorage implements StorageService {
   getPublicUrl(pathname: string): string {
-    // For Vercel Blob, SDK returns full URLs. If only pathname is available,
-    // you can construct using your store's host.
     const host = process.env.NEXT_PUBLIC_BLOB_HOST
     if (!host) throw new Error("Missing NEXT_PUBLIC_BLOB_HOST")
     const normalized = pathname.startsWith("/") ? pathname.slice(1) : pathname

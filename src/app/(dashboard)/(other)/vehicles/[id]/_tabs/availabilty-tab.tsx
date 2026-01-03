@@ -51,7 +51,7 @@ function AvailabilityTab() {
           />
         </div>
         <p className="text-[15px] text-muted-foreground leading-relaxed">
-          Track this vehicle’s reservation flow and upcoming service requirements.
+          Track this vehicle&apos;s reservation flow and upcoming service requirements.
         </p>
       </div>
       <div className="flex items-start">

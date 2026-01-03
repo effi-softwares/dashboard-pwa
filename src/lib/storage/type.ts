@@ -15,8 +15,6 @@ export type UploadTokenOptions = {
 }
 
 export interface StorageService {
-  /** Returns a fully-qualified public URL for the given pathname */
   getPublicUrl(pathname: string): string
-  /** Deletes a stored object by its public URL */
   deleteByUrl(url: string): Promise<{ success: boolean }>
 }
