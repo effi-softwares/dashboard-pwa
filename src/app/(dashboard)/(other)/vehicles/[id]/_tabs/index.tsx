@@ -20,7 +20,7 @@ export type Tab = {
   tab: React.ReactNode
 }
 
-export function VehicleDetailsTabs({ vehicle, statusHistory }: Props) {
+export function VehicleTabs({ vehicle, statusHistory }: Props) {
   const vehicleTabs = useMemo(
     () => [
       { label: "Availability", value: "availability", tab: null },

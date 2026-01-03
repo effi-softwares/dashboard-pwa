@@ -6,8 +6,8 @@ import { VehicleImage } from "@/types/vehicle"
 
 import { fetchVehicleDetails } from "./_actions"
 import VehicleBreadcrumbs from "./_components/vehicle-breadcrumbs"
-import { VehicleDetailsTabs } from "./_components/vehicle-details-tabs"
 import { VehicleHeader } from "./_components/vehicle-header"
+import { VehicleTabs } from "./_tabs"
 
 const findFrontImage = (images: VehicleImage[]) => {
   return images.find((img: VehicleImage) => img.role === IMAGE_ROLES.FRONT) || images[0]
@@ -32,7 +32,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
         vehicleFrontImage={findFrontImage(images)}
         currentStatus={currentStatus}
       />
-      <VehicleDetailsTabs vehicle={vehicle} statusHistory={statusHistory} />
+      <VehicleTabs vehicle={vehicle} statusHistory={statusHistory} />
     </div>
   )
 }
