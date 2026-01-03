@@ -10,6 +10,9 @@ export const vehicleAvailabilityTour = {
         "Toggle between daily, weekly, or monthly modes to see the right availability window.",
       selector: '[data-onborda="availability-view-mode"]',
       side: "bottom",
+      showControls: true,
+      pointerPadding: 14,
+      pointerRadius: 12,
     },
     {
       icon: "🚦",
@@ -17,6 +20,9 @@ export const vehicleAvailabilityTour = {
       content: "Each color shows a state: Available, Booked, Active Rental, or Maintenance.",
       selector: '[data-onborda="availability-status-legend"]',
       side: "bottom",
+      showControls: true,
+      pointerPadding: 14,
+      pointerRadius: 12,
     },
     {
       icon: "🧭",
@@ -24,6 +30,9 @@ export const vehicleAvailabilityTour = {
       content: "Jump to today or move across months with the navigation controls.",
       selector: '[data-onborda="availability-calendar-nav"]',
       side: "bottom",
+      showControls: true,
+      pointerPadding: 14,
+      pointerRadius: 12,
     },
   ],
 } satisfies { tour: string; steps: Step[] }

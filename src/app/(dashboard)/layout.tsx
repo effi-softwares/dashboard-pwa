@@ -28,7 +28,7 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
         showOnborda={false}
         shadowOpacity="0.4"
         cardComponent={TourCard}
-        cardTransition={{ duration: 0.3, type: "keyframes" }}
+        cardTransition={{ duration: 0.3, type: "spring" }}
       >
         <SidebarProvider defaultOpen={layoutPreferences.defaultOpen}>
           <AppSidebar />

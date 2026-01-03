@@ -6,7 +6,6 @@ import { X } from "lucide-react"
 import type { CardComponentProps } from "onborda"
 import { useOnborda } from "onborda"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -15,6 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
+import { FatButton } from "./ui/fat-button"
 
 export const TourCard: React.FC<CardComponentProps> = ({
   step,
@@ -43,7 +44,7 @@ export const TourCard: React.FC<CardComponentProps> = ({
               {step.title}
             </CardTitle>
           </div>
-          <Button
+          <FatButton
             variant="ghost"
             size="icon"
             className="text-zinc-500 hover:text-zinc-800"
@@ -51,7 +52,7 @@ export const TourCard: React.FC<CardComponentProps> = ({
             onClick={closeOnborda}
           >
             <X size={16} />
-          </Button>
+          </FatButton>
         </div>
       </CardHeader>
 
@@ -59,28 +60,31 @@ export const TourCard: React.FC<CardComponentProps> = ({
       <CardFooter className="pt-2">
         <div className="flex w-full items-center gap-3">
           {currentStep !== 0 && (
-            <Button
+            <FatButton
               variant="outline"
               className="border-zinc-300 text-zinc-800 hover:bg-zinc-100"
               onClick={prevStep}
             >
               Previous
-            </Button>
+            </FatButton>
           )}
 
           {currentStep + 1 !== totalSteps && (
-            <Button className="ml-auto bg-zinc-900 text-white hover:bg-zinc-800" onClick={nextStep}>
+            <FatButton
+              className="ml-auto bg-zinc-900 text-white hover:bg-zinc-800"
+              onClick={nextStep}
+            >
               Next
-            </Button>
+            </FatButton>
           )}
 
           {currentStep + 1 === totalSteps && (
-            <Button
+            <FatButton
               className="ml-auto bg-zinc-900 text-white hover:bg-zinc-800"
               onClick={handleFinish}
             >
               🎉 Finish!
-            </Button>
+            </FatButton>
           )}
         </div>
       </CardFooter>
