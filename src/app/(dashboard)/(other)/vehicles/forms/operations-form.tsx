@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { VehicleOperationsInput } from "@/zod/vehicle-form"
+import { VehicleOperationsInput } from "@/features/vehicle/schemas/vehicle-form.schema"
 
 type OperationsFormProps = {
   form: UseFormReturn<VehicleOperationsInput>

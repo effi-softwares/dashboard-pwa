@@ -3,9 +3,9 @@
 import { db as getDb } from "@/db/db"
 import { mediaTable, vehicleMediaTable } from "@/db/schemas"
 import { vehicleStatusTable, vehicleTable } from "@/db/schemas/vehicle-schema"
+import { Vehicle, vehicleSchema } from "@/features/vehicle/schemas/vehicle-form.schema"
 import { requireAuth } from "@/lib/auth/get-session"
 import { toPersistence } from "@/lib/mappers/vehicle-mapper"
-import { Vehicle, vehicleSchema } from "@/zod/vehicle-form"
 
 export async function createVehicleAction(rawData: Vehicle) {
   const session = await requireAuth()

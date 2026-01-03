@@ -13,7 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { FuelType, Transmission, VehicleStatus } from "@/zod/vehicle-form"
+import {
+  FuelType,
+  Transmission,
+  VehicleStatus,
+} from "@/features/vehicle/schemas/vehicle-form.schema"
 
 export type VehicleRow = {
   id: string

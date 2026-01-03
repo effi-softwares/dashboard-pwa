@@ -10,8 +10,8 @@ import {
   vehicleStatusTable,
   vehicleTable,
 } from "@/db/schemas/vehicle-schema"
+import { VehicleStatusEnum } from "@/features/vehicle/schemas/vehicle-form.schema"
 import { requireAuth } from "@/lib/auth/get-session"
-import { VehicleStatusEnum } from "@/zod/vehicle-form"
 
 const querySchema = z.object({
   page: z.string().optional(),

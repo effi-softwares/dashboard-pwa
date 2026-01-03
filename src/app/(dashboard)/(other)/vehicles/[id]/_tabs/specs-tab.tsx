@@ -19,8 +19,7 @@ import { useOnborda } from "onborda"
 
 import SegmentedToggle from "@/components/segmented-toggle"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { useUpdateVehicleSpec } from "@/features/vehicles/hooks"
-import { fuelTypeItems, transmissionItems } from "@/lib/contants"
+import { useUpdateVehicleSpec } from "@/features/vehicle/hooks/mutations/use-update-vehicle-spec"
 import {
   type BaggageCapacityUpdate,
   baggageCapacityUpdateSchema,
@@ -32,7 +31,8 @@ import {
   seatsUpdateSchema,
   type TransmissionUpdate,
   transmissionUpdateSchema,
-} from "@/zod/vehicle-edit-forms"
+} from "@/features/vehicle/schemas/vehicle-edit.schema"
+import { fuelTypeItems, transmissionItems } from "@/lib/contants"
 
 import FeatureCard from "../_components/feature-card"
 import SpecCard from "../_components/spec-card"
@@ -62,6 +62,7 @@ export function SpecsTab({ vehicle }: Props) {
   const transmissionForm = useForm<TransmissionUpdate>({
     resolver: zodResolver(transmissionUpdateSchema),
     defaultValues: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transmission: vehicle.transmission as any,
     },
   })
@@ -70,6 +71,7 @@ export function SpecsTab({ vehicle }: Props) {
   const fuelTypeForm = useForm<FuelTypeUpdate>({
     resolver: zodResolver(fuelTypeUpdateSchema),
     defaultValues: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       fuelType: vehicle.fuelType as any,
     },
   })

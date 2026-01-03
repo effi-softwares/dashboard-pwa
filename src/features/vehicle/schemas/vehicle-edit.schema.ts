@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { FuelTypeEnum, TransmissionEnum } from "./vehicle-form"
+import { FuelTypeEnum, TransmissionEnum } from "./vehicle-form.schema"
 
 /**
  * Individual field update schemas for vehicle specs

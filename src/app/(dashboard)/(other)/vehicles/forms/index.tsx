@@ -17,8 +17,8 @@ import {
 import { FatButton } from "@/components/ui/fat-button"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
-import { useCreateVehicle } from "@/features/vehicles/hooks"
-import type { Vehicle } from "@/zod/vehicle-form"
+import { useCreateVehicle } from "@/features/vehicle/hooks/mutations/use-create-vehicle"
+import type { Vehicle } from "@/features/vehicle/schemas/vehicle-form.schema"
 import {
   VehicleIdentityInput,
   vehicleIdentitySchema,
@@ -31,7 +31,7 @@ import {
   vehicleRatesSchema,
   VehicleSpecsInput,
   vehicleSpecsSchema,
-} from "@/zod/vehicle-form"
+} from "@/features/vehicle/schemas/vehicle-form.schema"
 
 import IdentityForm from "./identity-form"
 import ImagesForm from "./images-form"

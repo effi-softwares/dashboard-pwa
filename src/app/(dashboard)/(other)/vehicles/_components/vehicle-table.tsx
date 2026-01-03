@@ -31,7 +31,7 @@ import {
   TransmissionEnum,
   VehicleStatus,
   VehicleStatusEnum,
-} from "@/zod/vehicle-form"
+} from "@/features/vehicle/schemas/vehicle-form.schema"
 
 import VehicleFormClient from "../forms/index.client"
 import { buildVehicleColumns, VehicleRow } from "./columns"

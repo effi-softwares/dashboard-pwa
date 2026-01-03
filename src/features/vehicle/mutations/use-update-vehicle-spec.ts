@@ -23,7 +23,6 @@ export function useUpdateVehicleSpec() {
       return res.json()
     },
     onSuccess: (_data, variables) => {
-      // Invalidate the vehicle detail query to refetch with new data
       queryClient.invalidateQueries({
         queryKey: ["vehicle", variables.vehicleId],
       })

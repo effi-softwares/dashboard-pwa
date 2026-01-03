@@ -5,8 +5,8 @@ import { UseFormReturn } from "react-hook-form"
 
 import SingleImageUploader, { onUploadCompleteOptions } from "@/components/single-image-uploader"
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { VehicleImagesInput } from "@/features/vehicle/schemas/vehicle-form.schema"
 import type { ImageFormType } from "@/types"
-import { VehicleImagesInput } from "@/zod/vehicle-form"
 
 type UploadedImages = {
   front?: Omit<onUploadCompleteOptions, "file">

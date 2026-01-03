@@ -4,7 +4,7 @@ import { Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import { VehicleRatesInput } from "@/zod/vehicle-form"
+import { VehicleRatesInput } from "@/features/vehicle/schemas/vehicle-form.schema"
 
 import RateFormField from "./rate-form-fields"
 

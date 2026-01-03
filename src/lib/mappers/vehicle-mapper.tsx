@@ -1,5 +1,5 @@
 import { vehicleTable } from "@/db/schemas"
-import { Vehicle } from "@/zod/vehicle-form"
+import { Vehicle } from "@/features/vehicle/schemas/vehicle-form.schema"
 
 type VehicleDbInsert = typeof vehicleTable.$inferInsert
 type VehicleDbSelect = typeof vehicleTable.$inferSelect
