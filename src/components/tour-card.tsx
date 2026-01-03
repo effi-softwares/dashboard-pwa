@@ -22,7 +22,6 @@ export const TourCard: React.FC<CardComponentProps> = ({
   totalSteps,
   nextStep,
   prevStep,
-  arrow,
 }) => {
   const { closeOnborda } = useOnborda()
 
@@ -32,8 +31,8 @@ export const TourCard: React.FC<CardComponentProps> = ({
   }
 
   return (
-    <Card className="relative z-100099 min-w-[320px] w-fit max-w-md border border-zinc-200 bg-white/95 shadow-xl backdrop-blur">
-      <CardHeader className="pb-3">
+    <Card className="relative min-w-[320px] w-fit max-w-md border border-zinc-200 bg-white/95 shadow-xl backdrop-blur">
+      <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
             <CardDescription className="text-sm text-zinc-500">
@@ -57,7 +56,6 @@ export const TourCard: React.FC<CardComponentProps> = ({
       </CardHeader>
 
       <CardContent className="text-sm text-zinc-800 leading-relaxed">{step.content}</CardContent>
-
       <CardFooter className="pt-2">
         <div className="flex w-full items-center gap-3">
           {currentStep !== 0 && (
@@ -86,8 +84,6 @@ export const TourCard: React.FC<CardComponentProps> = ({
           )}
         </div>
       </CardFooter>
-
-      <span className="text-white">{arrow}</span>
     </Card>
   )
 }
