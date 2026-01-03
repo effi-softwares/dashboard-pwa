@@ -7,7 +7,6 @@ import type { StatusHistoryEntry, VehicleDetail } from "@/types/vehicle"
 
 import AvailabilityTab from "./availabilty-tab"
 import GalleryTab from "./galley-tab"
-import { IdentityTab } from "./identity-tab"
 import PricingTab from "./pricing-tab"
 import { SpecsTab } from "./specs-tab"
 import { StatusHistoryTab } from "./status-history-tab"
@@ -28,7 +27,6 @@ export function VehicleTabs({ vehicle, statusHistory }: Props) {
     () => [
       { label: "Availability", value: "availability", tab: <AvailabilityTab /> },
       { label: "Pricing", value: "pricing", tab: <PricingTab /> },
-      { label: "Info", value: "identity", tab: <IdentityTab vehicle={vehicle} /> },
       { label: "Specs", value: "specs", tab: <SpecsTab vehicle={vehicle} /> },
       { label: "Gallery", value: "gallery", tab: <GalleryTab /> },
       {
