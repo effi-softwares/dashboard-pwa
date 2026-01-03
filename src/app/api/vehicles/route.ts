@@ -4,14 +4,16 @@ import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { z } from "zod"
 
 import { db } from "@/db/db"
+import { vehicleMediaTable } from "@/db/schemas"
 import {
   fuelTypeEnum,
   transmissionEnum,
   vehicleStatusTable,
   vehicleTable,
 } from "@/db/schemas/vehicle-schema"
-import { VehicleStatusEnum } from "@/features/vehicle/schemas/vehicle-form.schema"
+import { vehicleSchema, VehicleStatusEnum } from "@/features/vehicle/schemas/vehicle-form.schema"
 import { requireAuth } from "@/lib/auth/get-session"
+import { toPersistence } from "@/lib/mappers/vehicle-mapper"
 
 const querySchema = z.object({
   page: z.string().optional(),
@@ -173,4 +175,72 @@ export async function GET(request: Request) {
     }
     return NextResponse.json({ error: "Failed to fetch vehicles" }, { status: 500 })
   }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await requireAuth()
+    const rawData = await request.json()
+
+    const parsed = vehicleSchema.safeParse(rawData)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid vehicle data", details: parsed.error.issues },
+        { status: 400 },
+      )
+    }
+
+    const dbData = toPersistence(parsed.data)
+    const images = parsed.data.images
+    const dbClient = db()
+
+    const [newVehicle] = await dbClient.insert(vehicleTable).values(dbData).returning()
+    await dbClient.insert(vehicleStatusTable).values({
+      vehicleId: newVehicle.id,
+      status: "Available",
+      note: "Initial creation via Admin Dashboard",
+      changedBy: session.user.id,
+    })
+
+    const linkOps: Promise<unknown>[] = []
+    if (images?.frontImageId) {
+      linkOps.push(linkVehicleMedia(dbClient, newVehicle.id, images.frontImageId, "front", 0))
+    }
+    if (images?.backImageId) {
+      linkOps.push(linkVehicleMedia(dbClient, newVehicle.id, images.backImageId, "back", 1))
+    }
+    if (images?.interiorImageId) {
+      linkOps.push(linkVehicleMedia(dbClient, newVehicle.id, images.interiorImageId, "interior", 2))
+    }
+    if (linkOps.length > 0) {
+      await Promise.all(linkOps)
+    }
+
+    return NextResponse.json(newVehicle, { status: 201 })
+  } catch (error) {
+    console.error("Error creating vehicle", error)
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    return NextResponse.json({ error: "Failed to create vehicle" }, { status: 500 })
+  }
+}
+
+async function linkVehicleMedia(
+  dbClient: ReturnType<typeof db>,
+  vehicleId: string,
+  mediaId: string,
+  role: "front" | "back" | "interior",
+  sortOrder = 0,
+) {
+  const [link] = await dbClient
+    .insert(vehicleMediaTable)
+    .values({
+      mediaId,
+      vehicleId,
+      role,
+      sortOrder,
+    })
+    .returning()
+  return link
 }

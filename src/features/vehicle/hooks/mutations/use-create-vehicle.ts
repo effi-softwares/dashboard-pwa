@@ -3,10 +3,22 @@
 import { useMutation } from "@tanstack/react-query"
 
 import { Vehicle } from "@/features/vehicle/schemas/vehicle-form.schema"
-import { createVehicleAction } from "@/server/vehicle-action"
 
 export function useCreateVehicle() {
   return useMutation({
-    mutationFn: (payload: Vehicle) => createVehicleAction(payload),
+    mutationFn: async (payload: Vehicle) => {
+      const res = await fetch("/api/vehicles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || "Failed to create vehicle")
+      }
+
+      return res.json()
+    },
   })
 }

@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { upload } from "@vercel/blob/client"
 
-import { persistMediaRecord } from "@/server/vehicle-action"
 import type { UploadOptions, UploadResult } from "@/types/api"
 
 async function generateBlurDataURL(file: File): Promise<string | null> {
@@ -70,16 +69,27 @@ export function useUploadMedia(options?: UploadOptions) {
         },
       })
 
-      const media = await persistMediaRecord({
-        type: "image",
-        url: blob.url,
-        pathname: blob.pathname,
-        mime: blob.contentType,
-        size: file.size,
-        width: dimensions?.width,
-        height: dimensions?.height,
-        blurDataURL,
+      const mediaRes = await fetch("/api/uploads/persist-media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "image",
+          url: blob.url,
+          pathname: blob.pathname,
+          mime: blob.contentType,
+          size: file.size,
+          width: dimensions?.width,
+          height: dimensions?.height,
+          blurDataURL,
+        }),
       })
+
+      if (!mediaRes.ok) {
+        const errorData = await mediaRes.json()
+        throw new Error(errorData.error || "Failed to persist media")
+      }
+
+      const media = await mediaRes.json()
 
       return {
         id: media.id,
