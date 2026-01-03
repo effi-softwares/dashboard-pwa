@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { desc, eq } from "drizzle-orm"
 
 import { db } from "@/db/db"
-import { user, vehicleStatusTable, vehicleTable } from "@/db/schemas"
+import { mediaTable, user, vehicleMediaTable, vehicleStatusTable, vehicleTable } from "@/db/schemas"
 import { requireAuth } from "@/lib/auth/get-session"
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -62,6 +62,22 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       .where(eq(vehicleStatusTable.vehicleId, id))
       .orderBy(desc(vehicleStatusTable.statusUpdatedAt))
 
+    const images = await dbClient
+      .select({
+        id: mediaTable.id,
+        url: mediaTable.url,
+        blurDataURL: mediaTable.blurDataURL,
+        role: vehicleMediaTable.role,
+        sortOrder: vehicleMediaTable.sortOrder,
+        createdAt: vehicleMediaTable.createdAt,
+      })
+      .from(vehicleMediaTable)
+      .innerJoin(mediaTable, eq(vehicleMediaTable.mediaId, mediaTable.id))
+      .where(eq(vehicleMediaTable.vehicleId, id))
+      .orderBy(vehicleMediaTable.sortOrder)
+
+    const currentStatus = statusHistory[0]?.status ?? "Unknown"
+
     const response = {
       vehicle: {
         ...vehicle,
@@ -72,6 +88,11 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
         ...entry,
         statusUpdatedAt: entry.statusUpdatedAt?.toISOString() ?? null,
       })),
+      images: images.map(img => ({
+        ...img,
+        createdAt: img.createdAt?.toISOString() ?? null,
+      })),
+      currentStatus,
     }
 
     return NextResponse.json(response)

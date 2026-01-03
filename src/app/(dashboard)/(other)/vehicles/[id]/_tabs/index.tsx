@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { StatusHistoryEntry, VehicleDetail } from "@/types/vehicle"
+import type { StatusHistoryEntry, VehicleDetail, VehicleImage } from "@/types/vehicle"
 
 import AvailabilityTab from "./availabilty-tab"
 import GalleryTab from "./galley-tab"
@@ -12,8 +12,10 @@ import { SpecsTab } from "./specs-tab"
 import { StatusHistoryTab } from "./status-history-tab"
 
 type Props = {
+  vehicleId: string
   vehicle: VehicleDetail
   statusHistory: StatusHistoryEntry[]
+  images: VehicleImage[]
 }
 
 export type Tab = {
@@ -22,20 +24,22 @@ export type Tab = {
   tab: React.ReactNode
 }
 
-export function VehicleTabs({ vehicle, statusHistory }: Props) {
+export function VehicleTabs({ vehicleId, vehicle, statusHistory, images }: Props) {
+  console.log(vehicleId)
+
   const vehicleTabs = useMemo(
     () => [
       { label: "Availability", value: "availability", tab: <AvailabilityTab /> },
       { label: "Pricing", value: "pricing", tab: <PricingTab /> },
       { label: "Specs", value: "specs", tab: <SpecsTab vehicle={vehicle} /> },
-      { label: "Gallery", value: "gallery", tab: <GalleryTab /> },
+      { label: "Gallery", value: "gallery", tab: <GalleryTab images={images} /> },
       {
         label: "Status History",
         value: "history",
         tab: <StatusHistoryTab statusHistory={statusHistory} />,
       },
     ],
-    [statusHistory, vehicle],
+    [statusHistory, vehicle, images],
   )
 
   const defaultTab = useMemo(() => vehicleTabs[0].value, [vehicleTabs])

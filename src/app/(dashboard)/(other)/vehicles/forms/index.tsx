@@ -17,7 +17,7 @@ import {
 import { FatButton } from "@/components/ui/fat-button"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
-import { useCreateVehicle } from "@/hooks/use-create-vehicle"
+import { useCreateVehicle } from "@/features/vehicles/hooks"
 import type { Vehicle } from "@/zod/vehicle-form"
 import {
   VehicleIdentityInput,
