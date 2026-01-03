@@ -84,3 +84,27 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: "Failed to fetch vehicle details" }, { status: 500 })
   }
 }
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await requireAuth()
+
+    const { id } = await params
+    const body = await request.json()
+
+    const dbClient = db()
+    await dbClient
+      .update(vehicleTable)
+      .set({ ...body, updatedAt: new Date() })
+      .where(eq(vehicleTable.id, id))
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    console.error("Error updating vehicle specs", error)
+    return NextResponse.json({ error: "Failed to update vehicle specs" }, { status: 500 })
+  }
+}
