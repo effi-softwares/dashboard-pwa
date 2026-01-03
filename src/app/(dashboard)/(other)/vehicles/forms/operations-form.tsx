@@ -62,7 +62,12 @@ function OperationsForm({ form }: OperationsFormProps) {
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={statusItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={statusItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -47,7 +47,12 @@ function RateFormField() {
             <FormItem>
               <FormLabel>Pricing Model</FormLabel>
               <FormControl>
-                <SegmentedToggle spacing={2} field={field} items={pricingModelItems} />
+                <SegmentedToggle
+                  spacing={2}
+                  value={field.value}
+                  onChange={field.onChange}
+                  items={pricingModelItems}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -183,7 +188,12 @@ function RateFormField() {
                   <FormItem>
                     <FormLabel>Unit</FormLabel>
                     <FormControl>
-                      <SegmentedToggle spacing={2} field={field} items={measureUnitItems} />
+                      <SegmentedToggle
+                        spacing={2}
+                        value={field.value}
+                        onChange={field.onChange}
+                        items={measureUnitItems}
+                      />
                     </FormControl>
                   </FormItem>
                 )}

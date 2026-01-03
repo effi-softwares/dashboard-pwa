@@ -189,7 +189,12 @@ function SpecForm({ form }: SpecFormProps) {
               <FormItem>
                 <FormLabel>Transmission</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={transmissionItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={transmissionItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,7 +210,12 @@ function SpecForm({ form }: SpecFormProps) {
               <FormItem>
                 <FormLabel>Fuel Type</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={fuelTypeItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={fuelTypeItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

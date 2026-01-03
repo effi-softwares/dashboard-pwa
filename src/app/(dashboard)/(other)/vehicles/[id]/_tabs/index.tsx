@@ -5,7 +5,10 @@ import { useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { StatusHistoryEntry, VehicleDetail } from "@/types/vehicle"
 
+import AvailabilityTab from "./availabilty-tab"
+import GalleryTab from "./galley-tab"
 import { IdentityTab } from "./identity-tab"
+import PricingTab from "./pricing-tab"
 import { SpecsTab } from "./specs-tab"
 import { StatusHistoryTab } from "./status-history-tab"
 
@@ -23,11 +26,11 @@ export type Tab = {
 export function VehicleTabs({ vehicle, statusHistory }: Props) {
   const vehicleTabs = useMemo(
     () => [
-      { label: "Availability", value: "availability", tab: null },
-      { label: "Rates", value: "rates", tab: null },
+      { label: "Availability", value: "availability", tab: <AvailabilityTab /> },
+      { label: "Pricing", value: "pricing", tab: <PricingTab /> },
       { label: "Info", value: "identity", tab: <IdentityTab vehicle={vehicle} /> },
       { label: "Specs", value: "specs", tab: <SpecsTab vehicle={vehicle} /> },
-      { label: "Gallery", value: "gallery", tab: null },
+      { label: "Gallery", value: "gallery", tab: <GalleryTab /> },
       {
         label: "Status History",
         value: "history",
