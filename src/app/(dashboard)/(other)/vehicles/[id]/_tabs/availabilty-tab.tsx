@@ -1,4 +1,7 @@
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
+"use client"
+
+import { CalendarDays, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
+import { useOnborda } from "onborda"
 
 import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
 import { FatButton } from "@/components/ui/fat-button"
@@ -32,12 +35,17 @@ const statusAndColors = [
 ]
 
 function AvailabilityTab() {
+  const { startOnborda } = useOnborda()
+
   return (
     <div className="space-y-8 mt-6">
       <div className="flex items-start">
-        <div className="space-y-4">
+        <div className="space-y-4" data-onborda="availability-view-mode">
           <SegmentedToggle spacing={2} items={viewModeItem} />
-          <div className="flex flex-wrap items-center gap-4 text-sm">
+          <div
+            className="flex flex-wrap items-center gap-4 text-sm"
+            data-onborda="availability-status-legend"
+          >
             {statusAndColors.map(({ status, color }) => (
               <div key={status} className="flex items-center gap-2">
                 <div className={`h-4 w-4 rounded ${color}`} />
@@ -47,9 +55,18 @@ function AvailabilityTab() {
           </div>
         </div>
 
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-2 ml-auto" data-onborda="availability-calendar-nav">
           <FatButton variant="outline">
             <p>Today</p>
+          </FatButton>
+          <FatButton
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            aria-label="Show availability tour"
+            onClick={() => startOnborda("vehicleAvailability")}
+          >
+            <Sparkles className="h-4 w-4" />
           </FatButton>
           <div className="flex items-center bg-secondary rounded-lg">
             <FatButton variant="ghost" size="icon" className="h-9 w-9">
