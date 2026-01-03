@@ -33,11 +33,6 @@ export async function POST(request: Request): Promise<NextResponse> {
           }),
         }
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Called by Vercel when upload succeeds
-        console.log("Blob upload completed:", blob.url, tokenPayload)
-        // Future: persist blob metadata to `media` table here or in client
-      },
     })
 
     return NextResponse.json(jsonResponse)

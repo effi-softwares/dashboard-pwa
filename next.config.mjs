@@ -11,6 +11,9 @@ const nextConfig = {
       },
     ],
     formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: false,
+    unoptimized: false,
   },
   async headers() {
     return [

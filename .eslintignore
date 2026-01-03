@@ -5,3 +5,4 @@ build
 coverage
 components/ui/**
 next-env.d.ts
+next.config.mjs
