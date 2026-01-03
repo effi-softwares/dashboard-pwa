@@ -1,6 +1,32 @@
-import { Check, X } from "lucide-react"
+import { useForm } from "react-hook-form"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Bluetooth,
+  Briefcase,
+  Dog,
+  DoorClosed,
+  Fuel,
+  Info,
+  Navigation,
+  Settings2,
+  Users,
+  Wind,
+} from "lucide-react"
+import { useOnborda } from "onborda"
+
+import SegmentedToggle from "@/components/segmented-toggle"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { transmissionItems } from "@/lib/contants"
+
+import FeatureCard from "../_components/feature-card"
+import SpecCard from "../_components/spec-card"
 
 type VehicleDetail = {
   transmission: string
@@ -18,61 +44,139 @@ type Props = {
   vehicle: VehicleDetail
 }
 
-function InfoRow({ label, value }: { label: string; value: string | number | React.ReactNode }) {
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-3">
-      <span className="text-sm font-medium text-muted-foreground min-w-[140px]">{label}</span>
-      <span className="text-base font-medium">{value}</span>
-    </div>
-  )
-}
-
-function FeatureItem({ label, enabled }: { label: string; enabled: boolean }) {
-  return (
-    <div className="flex items-center gap-3 py-2">
-      <div
-        className={`flex items-center justify-center w-6 h-6 rounded-full ${
-          enabled
-            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-            : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600"
-        }`}
-      >
-        {enabled ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-      </div>
-      <span className={`text-base ${enabled ? "font-medium" : "text-muted-foreground"}`}>
-        {label}
-      </span>
-    </div>
-  )
-}
-
 export function SpecsTab({ vehicle }: Props) {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Technical Specifications</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-0 divide-y">
-          <InfoRow label="Transmission" value={vehicle.transmission} />
-          <InfoRow label="Fuel Type" value={vehicle.fuelType} />
-          <InfoRow label="Seating Capacity" value={`${vehicle.seats} seats`} />
-          <InfoRow label="Number of Doors" value={vehicle.doors} />
-          <InfoRow label="Baggage Capacity" value={`${vehicle.baggageCapacity} large bags`} />
-        </CardContent>
-      </Card>
+  const { startOnborda } = useOnborda()
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Features & Amenities</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1">
-          <FeatureItem label="Air Conditioning" enabled={vehicle.hasAC} />
-          <FeatureItem label="Navigation System" enabled={vehicle.hasNavigation} />
-          <FeatureItem label="Bluetooth Connectivity" enabled={vehicle.hasBluetooth} />
-          <FeatureItem label="Pet Friendly" enabled={vehicle.isPetFriendly} />
-        </CardContent>
-      </Card>
+  const transmissionForm = useForm({
+    defaultValues: {
+      transmission: vehicle.transmission,
+    },
+  })
+
+  const toggleField = (field: string) => {
+    alert(`Toggled field: ${field}`)
+  }
+
+  return (
+    <div className="space-y-8 pt-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+            Technical Profile
+          </h2>
+          <Info
+            className="h-5 w-5 cursor-pointer text-slate-400 hover:text-slate-600"
+            aria-label="Show availability tour"
+            onClick={() => startOnborda("vehicleAvailability")}
+          />
+        </div>
+        <p className="text-muted-foreground leading-relaxed">
+          Detailed performance and capacity metrics.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-4 gap-x-8 gap-y-6">
+        <SpecCard
+          icon={Settings2}
+          label="Transmission"
+          alertDescription="Change transmission type"
+          value={vehicle.transmission}
+        >
+          <Form {...transmissionForm}>
+            <FormField
+              control={transmissionForm.control}
+              name="transmission"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <SegmentedToggle
+                      spacing={4}
+                      value={field.value}
+                      onChange={field.onChange}
+                      items={transmissionItems}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </Form>
+        </SpecCard>
+        <SpecCard
+          icon={Fuel}
+          label="Fuel Type"
+          alertDescription="Change fuel type"
+          value={vehicle.fuelType}
+        />
+        <SpecCard
+          icon={Users}
+          label="Seating"
+          alertDescription="Change number of passengers"
+          value={`${vehicle.seats} Passengers`}
+        />
+        <SpecCard
+          icon={DoorClosed}
+          label="Entry"
+          alertDescription="Change number of doors"
+          value={`${vehicle.doors} Doors`}
+        />
+        <SpecCard
+          icon={Briefcase}
+          label="Storage"
+          alertDescription="Change baggage capacity"
+          value={`${vehicle.baggageCapacity} Kg`}
+        />
+        <SpecCard
+          icon={Info}
+          label="Drivetrain"
+          alertDescription="Change drivetrain type"
+          value={"All-Wheel Drive"}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2 pt-6">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+            Comfort & Connectivity
+          </h2>
+          <Info
+            className="h-5 w-5 cursor-pointer text-slate-400 hover:text-slate-600"
+            aria-label="Show availability tour"
+            onClick={() => startOnborda("vehicleAvailability")}
+          />
+        </div>
+        <p className="text-muted-foreground leading-relaxed">
+          Standard features. Click to toggle status.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-4 gap-x-6 gap-y-6">
+        <FeatureCard
+          label="Air Conditioning"
+          enabled={vehicle.hasAC}
+          icon={Wind}
+          onToggle={() => toggleField("hasAC")}
+        />
+        <FeatureCard
+          label="GPS Navigation"
+          enabled={vehicle.hasNavigation}
+          icon={Navigation}
+          onToggle={() => toggleField("hasNavigation")}
+        />
+        <FeatureCard
+          label="Bluetooth"
+          enabled={vehicle.hasBluetooth}
+          icon={Bluetooth}
+          onToggle={() => toggleField("hasBluetooth")}
+        />
+        <FeatureCard
+          label="Pet Friendly"
+          enabled={vehicle.isPetFriendly}
+          icon={Dog}
+          onToggle={() => toggleField("isPetFriendly")}
+        />
+      </div>
+      <br />
     </div>
   )
 }

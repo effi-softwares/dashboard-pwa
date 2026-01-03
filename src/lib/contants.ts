@@ -1,3 +1,7 @@
+import { Battery, Droplet, Gauge, Hand, Leaf, Settings, Zap } from "lucide-react"
+
+import { SegmentedToggleItem } from "@/components/segmented-toggle"
+
 export const MONTHS = [
   "January",
   "February",
@@ -41,3 +45,57 @@ export const IMAGE_ROLES = {
   BACK: "back",
   INTERIOR: "interior",
 } as const
+
+export const transmissionItems: SegmentedToggleItem[] = [
+  {
+    label: "Automatic",
+    icon: Gauge,
+    value: "Automatic",
+    ariaLabel: "Select automatic transmission",
+  },
+  {
+    label: "Manual",
+    icon: Hand,
+    value: "Manual",
+    ariaLabel: "Select manual transmission",
+  },
+  {
+    label: "Semi-Automatic",
+    icon: Settings,
+    value: "Semi-Automatic",
+    ariaLabel: "Select semi-automatic transmission",
+  },
+]
+
+export const fuelTypeItems: SegmentedToggleItem[] = [
+  {
+    label: "Petrol",
+    icon: Droplet,
+    value: "Petrol",
+    ariaLabel: "Select petrol fuel type",
+  },
+  {
+    label: "Diesel",
+    icon: Droplet,
+    value: "Diesel",
+    ariaLabel: "Select diesel fuel type",
+  },
+  {
+    label: "Electric",
+    icon: Zap,
+    value: "Electric",
+    ariaLabel: "Select electric fuel type",
+  },
+  {
+    label: "Hybrid",
+    icon: Leaf,
+    value: "Hybrid",
+    ariaLabel: "Select hybrid fuel type",
+  },
+  {
+    label: "Hydrogen",
+    icon: Battery,
+    value: "Hydrogen",
+    ariaLabel: "Select hydrogen fuel type",
+  },
+]

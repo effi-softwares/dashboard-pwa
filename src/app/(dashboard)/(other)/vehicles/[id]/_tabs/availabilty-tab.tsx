@@ -50,7 +50,7 @@ function AvailabilityTab() {
             onClick={() => startOnborda("vehicleAvailability")}
           />
         </div>
-        <p className="text-[15px] text-muted-foreground leading-relaxed">
+        <p className="text-muted-foreground leading-relaxed">
           Track this vehicle&apos;s reservation flow and upcoming service requirements.
         </p>
       </div>
