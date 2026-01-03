@@ -41,10 +41,10 @@ export const vehicleSpecsSchema = z.object({
 
 export const vehicleOperationsSchema = z.object({
   status: VehicleStatusEnum.default("Available"),
-  registrationExpiryDate: z.date({
+  registrationExpiryDate: z.coerce.date({
     message: "Registration expiry date is required",
   }),
-  insuranceExpiryDate: z.date({
+  insuranceExpiryDate: z.coerce.date({
     message: "Insurance expiry date is required",
   }),
   insurancePolicyNumber: z.string().min(1, "Policy number is required"),
