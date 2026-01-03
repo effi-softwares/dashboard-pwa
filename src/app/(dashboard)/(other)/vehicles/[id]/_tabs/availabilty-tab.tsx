@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarDays, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
+import { CalendarDays, ChevronLeft, ChevronRight, Info } from "lucide-react"
 import { useOnborda } from "onborda"
 
 import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
@@ -56,17 +56,17 @@ function AvailabilityTab() {
         </div>
 
         <div className="flex gap-2 ml-auto" data-onborda="availability-calendar-nav">
-          <FatButton variant="outline">
-            <p>Today</p>
-          </FatButton>
           <FatButton
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="px-6"
             aria-label="Show availability tour"
             onClick={() => startOnborda("vehicleAvailability")}
           >
-            <Sparkles className="h-4 w-4" />
+            <Info className="h-4 w-4" />
+          </FatButton>
+          <FatButton variant="outline">
+            <p>Today</p>
           </FatButton>
           <div className="flex items-center bg-secondary rounded-lg">
             <FatButton variant="ghost" size="icon" className="h-9 w-9">
