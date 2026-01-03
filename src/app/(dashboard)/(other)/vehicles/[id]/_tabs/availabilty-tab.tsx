@@ -38,7 +38,22 @@ function AvailabilityTab() {
   const { startOnborda } = useOnborda()
 
   return (
-    <div className="space-y-8 mt-6">
+    <div className="space-y-8 mt-4">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+            Availability & Schedule
+          </h2>
+          <Info
+            className="h-5 w-5 cursor-pointer text-slate-400 hover:text-slate-600"
+            aria-label="Show availability tour"
+            onClick={() => startOnborda("vehicleAvailability")}
+          />
+        </div>
+        <p className="text-[15px] text-muted-foreground leading-relaxed">
+          Track this vehicle’s reservation flow and upcoming service requirements.
+        </p>
+      </div>
       <div className="flex items-start">
         <div className="space-y-4">
           <div data-onborda="availability-view-mode">
@@ -58,15 +73,6 @@ function AvailabilityTab() {
         </div>
 
         <div className="flex gap-2 ml-auto">
-          <FatButton
-            variant="ghost"
-            size="icon"
-            className="px-6"
-            aria-label="Show availability tour"
-            onClick={() => startOnborda("vehicleAvailability")}
-          >
-            <Info className="h-4 w-4" />
-          </FatButton>
           <div className="flex gap-2" data-onborda="availability-calendar-nav">
             <FatButton variant="outline">
               <p>Today</p>
@@ -84,8 +90,12 @@ function AvailabilityTab() {
             </div>
           </div>
         </div>
-
-        <div className=""></div>
+      </div>
+      <div className="border rounded-xl h-100 grid place-items-center">
+        <p>Availability chart goes here</p>
+      </div>
+      <div className="border rounded-xl h-100 grid place-items-center">
+        <p>Booking list goes here</p>
       </div>
     </div>
   )
