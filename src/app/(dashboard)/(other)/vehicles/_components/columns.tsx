@@ -1,10 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { Loader2, MoreHorizontal } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,128 +12,146 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { FatButton } from "@/components/ui/fat-button"
+import { VehicleStatus } from "@/features/vehicle/schemas/vehicle-form.schema"
+import type { VehicleListItem } from "@/features/vehicle/types"
 
-export type Vehicle = {
-  id: string
-  name: string
-  model: string
-  brand: string
-  year: number
-  status: "available" | "rented" | "maintenance"
+export type VehicleRow = VehicleListItem
+
+type BuildColumnsOptions = {
+  onChangeStatus: (opts: { id: string; status: VehicleStatus }) => void
+  changingId?: string | null
+  onRentVehicle: (id: string) => void
 }
 
-export const data: Vehicle[] = [
-  {
-    id: "m5gr84i9",
-    name: "Toyota Camry",
-    model: "SE",
-    brand: "Toyota",
-    year: 2020,
-    status: "available",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Honda Accord",
-    model: "EX",
-    brand: "Honda",
-    year: 2019,
-    status: "rented",
-  },
-  {
-    id: "derv1ws0",
-    name: "Ford Mustang",
-    model: "GT",
-    brand: "Ford",
-    year: 2021,
-    status: "maintenance",
-  },
-  {
-    id: "5kma53ae",
-    name: "Chevrolet Malibu",
-    model: "LT",
-    brand: "Chevrolet",
-    year: 2018,
-    status: "available",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Nissan Altima",
-    model: "SL",
-    brand: "Nissan",
-    year: 2022,
-    status: "rented",
-  },
-]
+function statusVariant(status: VehicleRow["status"] | null | undefined) {
+  switch (status) {
+    case "Available":
+      return "default" as const
+    case "Rented":
+      return "secondary" as const
+    case "Maintenance":
+      return "destructive" as const
+    case "Retired":
+      return "outline" as const
+    default:
+      return "secondary" as const
+  }
+}
 
-export const columns: ColumnDef<Vehicle>[] = [
+function statusLabel(status: VehicleRow["status"] | null | undefined) {
+  return status ?? "Unknown"
+}
+
+export const buildVehicleColumns = ({
+  onChangeStatus,
+  changingId,
+  onRentVehicle,
+}: BuildColumnsOptions): ColumnDef<VehicleRow>[] => [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+    accessorKey: "licensePlate",
+    header: "Plate",
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="font-semibold tracking-wide text-base">{row.original.licensePlate}</div>
     ),
-    enableSorting: false,
     enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "model",
-    header: "Model",
+    enableSorting: true,
   },
   {
     accessorKey: "brand",
-    header: "Brand",
+    header: "Vehicle",
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <span className="font-medium text-base leading-tight">
+          {row.original.brand} {row.original.model}
+        </span>
+        <span className="text-muted-foreground text-sm">{row.original.vehicleType}</span>
+      </div>
+    ),
+    enableSorting: true,
   },
   {
     accessorKey: "year",
     header: "Year",
+    enableSorting: true,
   },
   {
-    accessorKey: "status",
+    accessorKey: "transmission",
+    header: "Transmission",
+    enableSorting: false,
+  },
+  {
+    accessorKey: "fuelType",
+    header: "Fuel",
+    enableSorting: false,
+  },
+  {
+    id: "status",
     header: "Status",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="flex flex-col gap-1">
+        <Badge variant={statusVariant(row.original.status)} className="px-3 py-1 text-sm">
+          {statusLabel(row.original.status)}
+        </Badge>
+        {row.original.statusUpdatedAt ? (
+          <span className="text-xs text-muted-foreground">
+            Updated {new Date(row.original.statusUpdatedAt).toLocaleDateString()}
+          </span>
+        ) : null}
+      </div>
+    ),
   },
   {
     id: "actions",
+    header: "Actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="">
+        <div data-row-action className="flex justify-end gap-3">
+          <FatButton onClick={() => onRentVehicle(row.original.id)}>Rent this vehicle</FatButton>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <FatButton variant="ghost" className=" p-0" aria-label="Row actions">
+                {changingId === row.original.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MoreHorizontal />
+                )}
+              </FatButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+              <DropdownMenuLabel>Change status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
+              >
+                Available
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Rented" })}
+              >
+                Rented
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Maintenance" })}
+              >
+                Maintenance
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Retired" })}
+              >
+                Retired
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-muted-foreground" disabled>
+                VIN: {row.original.vin}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    ),
   },
 ]

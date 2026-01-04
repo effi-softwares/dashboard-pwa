@@ -1,32 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { X } from "lucide-react"
 
-import CustomerDetailsForm from "@/components/new-rental/customer-details-form"
-import VehicleSelectionForm from "@/components/new-rental/vehile-selection-form"
-import {
-  CustomerDetailsFormValues,
-  customerDetailsSchema,
-  type VehicleSelectionFormValues,
-  vehicleSelectionSchema,
-} from "@/components/new-rental/zod"
+import { RentalBookingWizard } from "@/app/(dashboard)/(other)/bookings/_components/rental-booking-wizard"
 import { Button } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
 
+export type RentalEntryPoint = "vehicle-table" | "home"
+
 type NewRentalContextType = {
   isOpen: boolean
-  step: number
+  selectedVehicleId?: string | null
+  entryPoint?: RentalEntryPoint
   setIsOpen: (isOpen: boolean) => void
-  showDrawer: () => void
+  showDrawer: (id?: string, entryPoint?: RentalEntryPoint) => void
+  showDrawerWithoutVehicle: (entryPoint?: RentalEntryPoint) => void
   hideDrawer: () => void
 }
-
-type NewRentalFormValues = VehicleSelectionFormValues & CustomerDetailsFormValues
 
 const NewRentalContext = createContext<NewRentalContextType | null>(null)
 
@@ -40,73 +32,46 @@ function useNewRentalContext() {
 
 function NewRentalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [step, setStep] = useState<number>(1)
-  const [formData, setFormData] = useState<Partial<NewRentalFormValues>>({})
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
+  const [entryPoint, setEntryPoint] = useState<RentalEntryPoint>("home")
 
-  const showDrawer = useCallback(() => setIsOpen(true), [])
-  const hideDrawer = useCallback(() => setIsOpen(false), [])
+  const showDrawer = useCallback((id?: string, ep: RentalEntryPoint = "vehicle-table") => {
+    if (id) setSelectedVehicleId(id)
+    setEntryPoint(ep)
+    setIsOpen(true)
+  }, [])
 
-  const vehicleSelectionForm = useForm<VehicleSelectionFormValues>({
-    resolver: zodResolver(vehicleSelectionSchema),
-    defaultValues: {
-      vehicleId: formData.vehicleId || "",
-    },
-  })
+  const showDrawerWithoutVehicle = useCallback((ep: RentalEntryPoint = "home") => {
+    setSelectedVehicleId(null)
+    setEntryPoint(ep)
+    setIsOpen(true)
+  }, [])
 
-  const customerDetailsForm = useForm<CustomerDetailsFormValues>({
-    resolver: zodResolver(customerDetailsSchema),
-    defaultValues: {
-      email: formData.email || "",
-      contactNumber: formData.contactNumber || "",
-      firstName: formData.firstName || "",
-      lastName: formData.lastName || "",
-      driverLicenseNumber: formData.driverLicenseNumber || "",
-    },
-  })
-
-  const getCurrentForm = () => {
-    switch (step) {
-      case 1:
-        return vehicleSelectionForm
-      case 2:
-        return customerDetailsForm
-      default:
-        return vehicleSelectionForm
-    }
-  }
-
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return <VehicleSelectionForm />
-      case 2:
-        return <CustomerDetailsForm />
-      default:
-        return <VehicleSelectionForm />
-    }
-  }
-
-  const handleNext = async () => {
-    if (step < 2) {
-      setStep(prev => prev + 1)
-    }
-  }
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(prev => prev - 1)
-    }
-  }
+  const hideDrawer = useCallback(() => {
+    setIsOpen(false)
+    setSelectedVehicleId(null)
+    setEntryPoint("home")
+  }, [])
 
   const contextValue = useMemo<NewRentalContextType>(
     () => ({
       isOpen,
-      step,
+      selectedVehicleId,
+      entryPoint,
       setIsOpen,
       showDrawer,
+      showDrawerWithoutVehicle,
       hideDrawer,
     }),
-    [isOpen, step, setIsOpen, showDrawer, hideDrawer],
+    [
+      isOpen,
+      selectedVehicleId,
+      entryPoint,
+      setIsOpen,
+      showDrawer,
+      showDrawerWithoutVehicle,
+      hideDrawer,
+    ],
   )
 
   return (
@@ -116,28 +81,17 @@ function NewRentalProvider({ children }: { children: React.ReactNode }) {
         <DrawerContent showHandle={false} className="h-dvh rounded-none!">
           <div className="max-w-7xl mx-auto flex flex-col h-full w-full">
             <div className="flex items-center justify-between py-4 mb-4 md:mb-0 border-b w-full">
-              <DrawerTitle className="">Title</DrawerTitle>
+              <DrawerTitle className="">Start Rental</DrawerTitle>
               <Button className="cursor-pointer" variant="ghost" onClick={hideDrawer}>
                 <X />
               </Button>
             </div>
-            <div className="flex-1">{renderStepContent()}</div>
-            <div className="shrink-0 py-4 mb-4 md:mb-0 border-t w-full">
-              <div className="flex justify-between">
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  className="flex items-center gap-2 bg-transparent"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </Button>
-
-                <Button onClick={handleNext} className="flex items-center gap-2 cursor-pointer">
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+            <div className="flex-1 overflow-y-auto">
+              <RentalBookingWizard
+                preselectedVehicleId={selectedVehicleId}
+                entryPoint={entryPoint}
+                onClose={hideDrawer}
+              />
             </div>
           </div>
         </DrawerContent>

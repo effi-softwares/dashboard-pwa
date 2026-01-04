@@ -7,7 +7,7 @@ function TestDrawer() {
   const { showDrawer } = useNewRentalContext()
   return (
     <div>
-      <Button onClick={showDrawer}>Open Test Drawer</Button>
+      <Button onClick={() => showDrawer(undefined)}>Open Test Drawer</Button>
     </div>
   )
 }

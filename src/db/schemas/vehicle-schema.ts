@@ -1,12 +1,12 @@
 import {
   boolean,
   index,
-  integer,
   pgEnum,
   pgTable,
   smallint,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm/relations"
 
@@ -34,7 +34,7 @@ export const vehicleStatusTypeEnum = pgEnum("vehicle_status_type", [
 ])
 
 export const vehicleTable = pgTable("vehicles", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid("id").primaryKey().defaultRandom(),
   vehicleType: text("vehicle_type").notNull(),
   brand: text("brand").notNull(),
   model: text("model").notNull(),
@@ -64,8 +64,8 @@ export const vehicleTable = pgTable("vehicles", {
 export const vehicleStatusTable = pgTable(
   "vehicle_status",
   {
-    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    vehicleId: integer("vehicle_id")
+    id: uuid("id").primaryKey().defaultRandom(),
+    vehicleId: uuid("vehicle_id")
       .notNull()
       .references(() => vehicleTable.id, { onDelete: "cascade" }),
     status: vehicleStatusTypeEnum("status").notNull(),

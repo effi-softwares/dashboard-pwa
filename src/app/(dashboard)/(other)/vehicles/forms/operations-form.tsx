@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { VehicleOperationsInput } from "@/zod/vehicle-form"
+import { VehicleOperationsInput } from "@/features/vehicle/schemas/vehicle-form.schema"
 
 type OperationsFormProps = {
   form: UseFormReturn<VehicleOperationsInput>
@@ -62,7 +62,12 @@ function OperationsForm({ form }: OperationsFormProps) {
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={statusItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={statusItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,7 +98,13 @@ function OperationsForm({ form }: OperationsFormProps) {
                     </FatInputGroupAddon>
                     <FatInputGroupInput
                       {...field}
-                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toLocaleDateString()
+                          : typeof field.value === "string" && field.value
+                            ? new Date(field.value).toLocaleDateString()
+                            : ""
+                      }
                       type="text"
                       placeholder="Select registration expiry date"
                       readOnly
@@ -150,7 +161,13 @@ function OperationsForm({ form }: OperationsFormProps) {
                     </FatInputGroupAddon>
                     <FatInputGroupInput
                       {...field}
-                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toLocaleDateString()
+                          : typeof field.value === "string" && field.value
+                            ? new Date(field.value).toLocaleDateString()
+                            : ""
+                      }
                       type="text"
                       placeholder="Select insurance expiry date"
                       readOnly

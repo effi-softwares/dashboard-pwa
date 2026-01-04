@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 import { YearSelector } from "@/components/year-selector"
+import { VehicleIdentityInput } from "@/features/vehicle/schemas/vehicle-form.schema"
 import { VEHICLE_COLORS } from "@/lib/contants"
-import { VehicleIdentityInput } from "@/zod/vehicle-form"
 
 type IdentityFomProps = {
   form: UseFormReturn<VehicleIdentityInput>

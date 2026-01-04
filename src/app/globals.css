@@ -194,3 +194,20 @@
 .fat {
   @apply h-12 rounded-xl;
 }
+
+[data-name="onborda-overlay"] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998 !important;
+  pointer-events: none;
+}
+
+[data-name="onborda-pointer"] {
+  z-index: 9999 !important;
+  pointer-events: none;
+}
+
+[data-name="onborda-card"] {
+  z-index: 10000 !important;
+  pointer-events: auto;
+}

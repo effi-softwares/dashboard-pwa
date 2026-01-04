@@ -41,10 +41,10 @@ export const vehicleSpecsSchema = z.object({
 
 export const vehicleOperationsSchema = z.object({
   status: VehicleStatusEnum.default("Available"),
-  registrationExpiryDate: z.date({
+  registrationExpiryDate: z.coerce.date({
     message: "Registration expiry date is required",
   }),
-  insuranceExpiryDate: z.date({
+  insuranceExpiryDate: z.coerce.date({
     message: "Insurance expiry date is required",
   }),
   insurancePolicyNumber: z.string().min(1, "Policy number is required"),
@@ -59,6 +59,15 @@ const limitedMileageSchema = z.object({
   limitPerDay: z.number().min(1, "Daily limit must be positive (e.g., 200km)"),
   overageFeePerUnit: z.number().min(0, "Cost per extra km is required"),
   measureUnit: z.enum(["km", "miles"]).default("km"),
+})
+
+export const vehicleImagesSchema = z.object({
+  frontImageUrl: z.string().url("Front image is required").optional(),
+  backImageUrl: z.string().url("Back image is required").optional(),
+  interiorImageUrl: z.string().url("Interior image is required").optional(),
+  frontImageId: z.string().uuid("Invalid front image id").optional(),
+  backImageId: z.string().uuid("Invalid back image id").optional(),
+  interiorImageId: z.string().uuid("Invalid interior image id").optional(),
 })
 
 export const vehicleRatesSchema = z.object({
@@ -88,6 +97,7 @@ export const vehicleRatesSchema = z.object({
 
 export const vehicleSchema = z.object({
   identity: vehicleIdentitySchema,
+  images: vehicleImagesSchema,
   specs: vehicleSpecsSchema,
   operations: vehicleOperationsSchema,
   rates: vehicleRatesSchema,
@@ -107,6 +117,9 @@ export type PricingModelInput = z.input<typeof PricingModelEnum>
 
 export type VehicleIdentity = z.infer<typeof vehicleIdentitySchema>
 export type VehicleIdentityInput = z.input<typeof vehicleIdentitySchema>
+
+export type VehicleImages = z.infer<typeof vehicleImagesSchema>
+export type VehicleImagesInput = z.input<typeof vehicleImagesSchema>
 
 export type VehicleFeatures = z.infer<typeof vehicleFeaturesSchema>
 export type VehicleFeaturesInput = z.input<typeof vehicleFeaturesSchema>

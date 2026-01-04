@@ -3,6 +3,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { layoutPreferences } from "@/config/app-config"
 import { cn } from "@/lib/utils"
 
+import HeaderBreadcrumb from "./header-breadcrumb"
 import { UserAccount } from "./user-account"
 
 function AppHeader() {
@@ -18,7 +19,7 @@ function AppHeader() {
         <div className="flex items-center gap-1 lg:gap-2">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-          {/* <SearchDialog /> */}
+          <HeaderBreadcrumb />
         </div>
         <div className="flex items-center gap-2">
           <UserAccount />

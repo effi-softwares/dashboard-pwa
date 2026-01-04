@@ -6,7 +6,6 @@ import { useForm, UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Car, ChevronLeft, ChevronRight, LucideIcon, Save } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
   Drawer,
   DrawerContent,
@@ -15,13 +14,16 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { FatButton } from "@/components/ui/fat-button"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
-import { useCreateVehicle } from "@/hooks/use-create-vehicle"
-import type { Vehicle } from "@/zod/vehicle-form"
+import { useCreateVehicle } from "@/features/vehicle/mutations/use-create-vehicle"
+import type { Vehicle } from "@/features/vehicle/schemas/vehicle-form.schema"
 import {
   VehicleIdentityInput,
   vehicleIdentitySchema,
+  VehicleImagesInput,
+  vehicleImagesSchema,
   VehicleInput,
   VehicleOperationsInput,
   vehicleOperationsSchema,
@@ -29,9 +31,10 @@ import {
   vehicleRatesSchema,
   VehicleSpecsInput,
   vehicleSpecsSchema,
-} from "@/zod/vehicle-form"
+} from "@/features/vehicle/schemas/vehicle-form.schema"
 
 import IdentityForm from "./identity-form"
+import ImagesForm from "./images-form"
 import OperationsForm from "./operations-form"
 import RateForm from "./rate-form"
 import SpecForm from "./spec-form"
@@ -42,6 +45,7 @@ export interface StepFormItem {
   nextButtonText?: string
   form:
     | UseFormReturn<VehicleIdentityInput>
+    | UseFormReturn<VehicleImagesInput>
     | UseFormReturn<VehicleSpecsInput>
     | UseFormReturn<VehicleOperationsInput>
     | UseFormReturn<VehicleRatesInput>
@@ -59,14 +63,27 @@ function VehicleStepForm() {
   const identityForm = useForm<VehicleIdentityInput>({
     resolver: zodResolver(vehicleIdentitySchema),
     defaultValues: {
-      brand: formData.identity?.brand,
-      vehicleType: formData.identity?.vehicleType,
-      model: formData.identity?.model,
-      year: formData.identity?.year,
-      vin: formData.identity?.vin,
-      licensePlate: formData.identity?.licensePlate,
+      brand: formData.identity?.brand ?? "",
+      vehicleType: formData.identity?.vehicleType ?? "",
+      model: formData.identity?.model ?? "",
+      year: formData.identity?.year ?? new Date().getFullYear(),
+      vin: formData.identity?.vin ?? "",
+      licensePlate: formData.identity?.licensePlate ?? "",
       color: formData.identity?.color,
       isBrandNew: formData.identity?.isBrandNew ?? false,
+    },
+    mode: "onBlur",
+  })
+
+  const imagesForm = useForm<VehicleImagesInput>({
+    resolver: zodResolver(vehicleImagesSchema),
+    defaultValues: {
+      frontImageUrl: formData.images?.frontImageUrl,
+      backImageUrl: formData.images?.backImageUrl,
+      interiorImageUrl: formData.images?.interiorImageUrl,
+      frontImageId: formData.images?.frontImageId,
+      backImageId: formData.images?.backImageId,
+      interiorImageId: formData.images?.interiorImageId,
     },
     mode: "onBlur",
   })
@@ -90,7 +107,7 @@ function VehicleStepForm() {
       status: formData.operations?.status,
       registrationExpiryDate: formData.operations?.registrationExpiryDate,
       insuranceExpiryDate: formData.operations?.insuranceExpiryDate,
-      insurancePolicyNumber: formData.operations?.insurancePolicyNumber,
+      insurancePolicyNumber: formData.operations?.insurancePolicyNumber ?? "",
     },
     mode: "onBlur",
   })
@@ -108,14 +125,22 @@ function VehicleStepForm() {
       {
         title: "Vehicle Info",
         icon: Car,
-        nextButtonText: "Continue to Details",
+        nextButtonText: "Continue to Images",
         form: identityForm,
         formComponent: <IdentityForm form={identityForm} />,
       },
       {
-        title: "Specifications",
+        title: "Vehicle Images",
         icon: Car,
         previousButtonText: "Back to Info",
+        nextButtonText: "Continue to Details",
+        form: imagesForm,
+        formComponent: <ImagesForm form={imagesForm} />,
+      },
+      {
+        title: "Specifications",
+        icon: Car,
+        previousButtonText: "Back to Images",
         nextButtonText: "Continue to Operations",
         form: specsForm,
         formComponent: <SpecForm form={specsForm} />,
@@ -137,7 +162,7 @@ function VehicleStepForm() {
         formComponent: <RateForm form={ratesForm} />,
       },
     ],
-    [identityForm, specsForm, operationsForm, ratesForm],
+    [identityForm, imagesForm, specsForm, operationsForm, ratesForm],
   )
 
   const getCurrentForm = () => {
@@ -168,12 +193,15 @@ function VehicleStepForm() {
           setFormData(prev => ({ ...prev, identity: data as VehicleIdentityInput }))
           break
         case 2:
-          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
+          setFormData(prev => ({ ...prev, images: data as VehicleImagesInput }))
           break
         case 3:
-          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          setFormData(prev => ({ ...prev, specs: data as VehicleSpecsInput }))
           break
         case 4:
+          setFormData(prev => ({ ...prev, operations: data as VehicleOperationsInput }))
+          break
+        case 5:
           setFormData(prev => ({ ...prev, rates: data as VehicleRatesInput }))
           break
       }
@@ -211,19 +239,18 @@ function VehicleStepForm() {
     if (isValid) {
       try {
         const identity = identityForm.getValues()
+        const images = imagesForm.getValues()
         const specs = specsForm.getValues()
         const operations = operationsForm.getValues()
         const rates = ratesForm.getValues()
 
         const payloadInput: VehicleInput = {
           identity,
+          images,
           specs,
           operations,
           rates,
         }
-
-        console.log(payloadInput)
-        return
 
         const created = await createVehicle.mutateAsync(payloadInput as unknown as Vehicle)
         console.log("Vehicle created:", created)
@@ -231,6 +258,7 @@ function VehicleStepForm() {
         setIsOpen(false)
         setCurrentStep(1)
         identityForm.reset()
+        imagesForm.reset()
         specsForm.reset()
         operationsForm.reset()
         ratesForm.reset()
@@ -245,7 +273,7 @@ function VehicleStepForm() {
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={true}>
       <DrawerTrigger asChild>
-        <Button>Add Vehicle</Button>
+        <FatButton>Add Vehicle</FatButton>
       </DrawerTrigger>
       <DrawerContent showHandle={false} className="h-dvh rounded-none!">
         <DrawerHeader className="px-0 pb-0">
@@ -264,7 +292,7 @@ function VehicleStepForm() {
 
         <DrawerFooter className="my-2 px-0 border-t">
           <div className="flex justify-between drawer-container gap-4">
-            <Button
+            <FatButton
               type="button"
               variant="outline"
               onClick={handleBack}
@@ -273,28 +301,28 @@ function VehicleStepForm() {
             >
               <ChevronLeft className="w-4 h-4" />
               {getPreviousButtonText()}
-            </Button>
+            </FatButton>
             <div className="flex-1"></div>
-            <Button
+            <FatButton
               type="button"
               variant="ghost"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-2 text-sky-700 bg-transparent hover:bg-transparent hover:underline hover:text-sky-600"
             >
               Cancel
-            </Button>
+            </FatButton>
 
             {currentStep < steps.length ? (
-              <Button
+              <FatButton
                 type="button"
                 onClick={handleNext}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 {getNextButtonText()}
                 <ChevronRight className="w-4 h-4" />
-              </Button>
+              </FatButton>
             ) : (
-              <Button
+              <FatButton
                 type="button"
                 onClick={handleSave}
                 disabled={createVehicle.isPending}
@@ -306,7 +334,7 @@ function VehicleStepForm() {
                   <Save className="w-4 h-4" />
                 )}
                 {createVehicle.isPending ? "Saving..." : "Save Vehicle"}
-              </Button>
+              </FatButton>
             )}
           </div>
         </DrawerFooter>

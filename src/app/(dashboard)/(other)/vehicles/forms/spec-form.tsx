@@ -1,20 +1,9 @@
 import { UseFormReturn } from "react-hook-form"
 
-import {
-  BaggageClaimIcon,
-  Battery,
-  DoorOpen,
-  Droplet,
-  Gauge,
-  Hand,
-  Leaf,
-  Settings,
-  Table,
-  Zap,
-} from "lucide-react"
+import { BaggageClaimIcon, DoorOpen, Table } from "lucide-react"
 
 import { NumberSelector } from "@/components/number-selector"
-import SegmentedToggle, { SegmentedToggleItem } from "@/components/segmented-toggle"
+import SegmentedToggle from "@/components/segmented-toggle"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   FatInputGroup,
@@ -30,64 +19,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Label } from "@/components/ui/label"
-import { VehicleSpecsInput } from "@/zod/vehicle-form"
+import { VehicleSpecsInput } from "@/features/vehicle/schemas/vehicle-form.schema"
+import { fuelTypeItems, transmissionItems } from "@/lib/contants"
 
 type SpecFormProps = {
   form: UseFormReturn<VehicleSpecsInput>
 }
-export const transmissionItems: SegmentedToggleItem[] = [
-  {
-    label: "Automatic",
-    icon: Gauge,
-    value: "Automatic",
-    ariaLabel: "Select automatic transmission",
-  },
-  {
-    label: "Manual",
-    icon: Hand,
-    value: "Manual",
-    ariaLabel: "Select manual transmission",
-  },
-  {
-    label: "Semi-Automatic",
-    icon: Settings,
-    value: "Semi-Automatic",
-    ariaLabel: "Select semi-automatic transmission",
-  },
-]
-
-export const fuelTypeItems: SegmentedToggleItem[] = [
-  {
-    label: "Petrol",
-    icon: Droplet,
-    value: "Petrol",
-    ariaLabel: "Select petrol fuel type",
-  },
-  {
-    label: "Diesel",
-    icon: Droplet,
-    value: "Diesel",
-    ariaLabel: "Select diesel fuel type",
-  },
-  {
-    label: "Electric",
-    icon: Zap,
-    value: "Electric",
-    ariaLabel: "Select electric fuel type",
-  },
-  {
-    label: "Hybrid",
-    icon: Leaf,
-    value: "Hybrid",
-    ariaLabel: "Select hybrid fuel type",
-  },
-  {
-    label: "Hydrogen",
-    icon: Battery,
-    value: "Hydrogen",
-    ariaLabel: "Select hydrogen fuel type",
-  },
-]
 
 function SpecForm({ form }: SpecFormProps) {
   return (
@@ -189,7 +126,12 @@ function SpecForm({ form }: SpecFormProps) {
               <FormItem>
                 <FormLabel>Transmission</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={transmissionItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={transmissionItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,7 +147,12 @@ function SpecForm({ form }: SpecFormProps) {
               <FormItem>
                 <FormLabel>Fuel Type</FormLabel>
                 <FormControl>
-                  <SegmentedToggle spacing={4} field={field} items={fuelTypeItems} />
+                  <SegmentedToggle
+                    spacing={4}
+                    value={field.value}
+                    onChange={field.onChange}
+                    items={fuelTypeItems}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

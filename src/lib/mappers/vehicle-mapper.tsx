@@ -1,5 +1,5 @@
 import { vehicleTable } from "@/db/schemas"
-import { Vehicle } from "@/zod/vehicle-form"
+import { Vehicle } from "@/features/vehicle/schemas/vehicle-form.schema"
 
 type VehicleDbInsert = typeof vehicleTable.$inferInsert
 type VehicleDbSelect = typeof vehicleTable.$inferSelect
@@ -57,5 +57,7 @@ export function toDomain(dbRecord: VehicleDbSelect): Vehicle {
         isPetFriendly: dbRecord.isPetFriendly,
       },
     },
+    // Images are not persisted yet; keep placeholder shape for the domain model
+    images: {},
   }
 }
