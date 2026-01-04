@@ -1,32 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { X } from "lucide-react"
 
-import CustomerDetailsForm from "@/components/new-rental/customer-details-form"
-import VehicleSelectionForm from "@/components/new-rental/vehile-selection-form"
-import {
-  CustomerDetailsFormValues,
-  customerDetailsSchema,
-  type VehicleSelectionFormValues,
-  vehicleSelectionSchema,
-} from "@/components/new-rental/zod"
 import { Button } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
 
 type NewRentalContextType = {
   isOpen: boolean
-  step: number
+  selectedId?: string | null
   setIsOpen: (isOpen: boolean) => void
-  showDrawer: () => void
+  showDrawer: (id: string) => void
   hideDrawer: () => void
 }
-
-type NewRentalFormValues = VehicleSelectionFormValues & CustomerDetailsFormValues
 
 const NewRentalContext = createContext<NewRentalContextType | null>(null)
 
@@ -40,73 +27,26 @@ function useNewRentalContext() {
 
 function NewRentalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [step, setStep] = useState<number>(1)
-  const [formData, setFormData] = useState<Partial<NewRentalFormValues>>({})
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const showDrawer = useCallback(() => setIsOpen(true), [])
-  const hideDrawer = useCallback(() => setIsOpen(false), [])
-
-  const vehicleSelectionForm = useForm<VehicleSelectionFormValues>({
-    resolver: zodResolver(vehicleSelectionSchema),
-    defaultValues: {
-      vehicleId: formData.vehicleId || "",
-    },
-  })
-
-  const customerDetailsForm = useForm<CustomerDetailsFormValues>({
-    resolver: zodResolver(customerDetailsSchema),
-    defaultValues: {
-      email: formData.email || "",
-      contactNumber: formData.contactNumber || "",
-      firstName: formData.firstName || "",
-      lastName: formData.lastName || "",
-      driverLicenseNumber: formData.driverLicenseNumber || "",
-    },
-  })
-
-  const getCurrentForm = () => {
-    switch (step) {
-      case 1:
-        return vehicleSelectionForm
-      case 2:
-        return customerDetailsForm
-      default:
-        return vehicleSelectionForm
-    }
-  }
-
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return <VehicleSelectionForm />
-      case 2:
-        return <CustomerDetailsForm />
-      default:
-        return <VehicleSelectionForm />
-    }
-  }
-
-  const handleNext = async () => {
-    if (step < 2) {
-      setStep(prev => prev + 1)
-    }
-  }
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(prev => prev - 1)
-    }
-  }
+  const showDrawer = useCallback((id: string) => {
+    setSelectedId(id)
+    setIsOpen(true)
+  }, [])
+  const hideDrawer = useCallback(() => {
+    setIsOpen(false)
+    setSelectedId(null)
+  }, [])
 
   const contextValue = useMemo<NewRentalContextType>(
     () => ({
       isOpen,
-      step,
+      selectedId,
       setIsOpen,
       showDrawer,
       hideDrawer,
     }),
-    [isOpen, step, setIsOpen, showDrawer, hideDrawer],
+    [isOpen, selectedId, setIsOpen, showDrawer, hideDrawer],
   )
 
   return (
@@ -121,24 +61,7 @@ function NewRentalProvider({ children }: { children: React.ReactNode }) {
                 <X />
               </Button>
             </div>
-            <div className="flex-1">{renderStepContent()}</div>
-            <div className="shrink-0 py-4 mb-4 md:mb-0 border-t w-full">
-              <div className="flex justify-between">
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  className="flex items-center gap-2 bg-transparent"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </Button>
-
-                <Button onClick={handleNext} className="flex items-center gap-2 cursor-pointer">
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+            <div className="flex-1">{selectedId}</div>
           </div>
         </DrawerContent>
       </Drawer>

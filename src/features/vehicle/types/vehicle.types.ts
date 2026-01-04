@@ -65,3 +65,20 @@ export type VehicleSummary = {
   year: number
   currentStatus: string
 }
+
+export type VehicleListItem = {
+  id: string
+  brand: string
+  model: string
+  vehicleType: string
+  year: number
+  licensePlate: string
+  vin: string
+  transmission: string
+  fuelType: string
+  status: VehicleStatus
+  statusUpdatedAt: string | null
+  statusNote: string | null
+  createdAt: string | null
+  updatedAt: string | null
+}

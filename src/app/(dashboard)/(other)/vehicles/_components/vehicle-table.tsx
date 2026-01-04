@@ -1,9 +1,8 @@
 "use client"
 
-import * as React from "react"
+import { MouseEvent, useCallback, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   flexRender,
   getCoreRowModel,
@@ -26,109 +25,64 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useChangeVehicleStatus } from "@/features/vehicle/mutations/use-change-vehicle-status"
+import { useVehicles } from "@/features/vehicle/queries/use-vehicle-queries"
 import {
   FuelTypeEnum,
   TransmissionEnum,
   VehicleStatus,
   VehicleStatusEnum,
 } from "@/features/vehicle/schemas/vehicle-form.schema"
+import { useNewRentalContext } from "@/providers/new-rental-provider"
 
 import VehicleFormClient from "../forms/index.client"
-import { buildVehicleColumns, VehicleRow } from "./columns"
-
-type VehiclesResponse = {
-  data: VehicleRow[]
-  page: number
-  pageSize: number
-  total: number
-  totalPages: number
-}
+import { buildVehicleColumns } from "./columns"
 
 export function VehicleTable() {
-  const queryClient = useQueryClient()
   const router = useRouter()
+  const { showDrawer } = useNewRentalContext()
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 20 })
-  const [searchInput, setSearchInput] = React.useState("")
-  const [search, setSearch] = React.useState("")
-  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(undefined)
-  const [fuelFilter, setFuelFilter] = React.useState<string | undefined>(undefined)
-  const [transmissionFilter, setTransmissionFilter] = React.useState<string | undefined>(undefined)
-  const [vehicleTypeFilter, setVehicleTypeFilter] = React.useState<string>("")
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 })
+  const [searchInput, setSearchInput] = useState("")
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined)
+  const [fuelFilter, setFuelFilter] = useState<string | undefined>(undefined)
+  const [transmissionFilter, setTransmissionFilter] = useState<string | undefined>(undefined)
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState<string>("")
 
   const primarySort = sorting[0]
   const sortBy = primarySort?.id
   const sortDir = primarySort?.desc ? "desc" : "asc"
 
-  const { data, isLoading, isFetching, isError } = useQuery<VehiclesResponse>({
-    queryKey: [
-      "vehicles",
-      {
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
-        search,
-        statusFilter,
-        fuelFilter,
-        transmissionFilter,
-        vehicleTypeFilter,
-        sortBy,
-        sortDir,
-      },
-    ],
-    queryFn: async () => {
-      const params = new URLSearchParams()
-      params.set("page", String(pagination.pageIndex + 1))
-      params.set("pageSize", String(pagination.pageSize))
-      if (search) params.set("search", search)
-      if (statusFilter) params.set("status", statusFilter)
-      if (fuelFilter) params.set("fuelType", fuelFilter)
-      if (transmissionFilter) params.set("transmission", transmissionFilter)
-      if (vehicleTypeFilter) params.set("vehicleType", vehicleTypeFilter)
-      if (sortBy) params.set("sortBy", sortBy)
-      if (sortDir) params.set("sortDir", sortDir)
-
-      const res = await fetch(`/api/vehicles?${params.toString()}`)
-      if (!res.ok) {
-        throw new Error("Failed to fetch vehicles")
-      }
-      return res.json()
-    },
-    placeholderData: previousData => previousData,
-    staleTime: 5 * 60 * 1000,
+  const { data, isLoading, isFetching, isError } = useVehicles({
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+    search,
+    status: statusFilter,
+    fuelType: fuelFilter,
+    transmission: transmissionFilter,
+    vehicleType: vehicleTypeFilter,
+    sortBy,
+    sortDir,
   })
 
-  const changeStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: VehicleStatus }) => {
-      const res = await fetch(`/api/vehicles/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      })
-      if (!res.ok) {
-        throw new Error("Failed to update status")
-      }
-      return res.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vehicles"] })
-    },
-  })
+  const changeStatus = useChangeVehicleStatus()
 
-  const handleSearch = React.useCallback(() => {
+  const handleSearch = useCallback(() => {
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
     setSearch(searchInput.trim())
   }, [searchInput])
 
-  const handleChangeStatus = React.useCallback(
+  const handleChangeStatus = useCallback(
     ({ id, status }: { id: string; status: VehicleStatus }) => {
       changeStatus.mutate({ id, status })
     },
     [changeStatus],
   )
 
-  const handleRowClick = React.useCallback(
-    (event: React.MouseEvent<HTMLTableRowElement>, rowId: string) => {
+  const handleRowClick = useCallback(
+    (event: MouseEvent<HTMLTableRowElement>, rowId: string) => {
       const target = event.target as HTMLElement
       if (target.closest("[data-row-action]")) return
       router.push(`/vehicles/${rowId}`)
@@ -136,13 +90,14 @@ export function VehicleTable() {
     [router],
   )
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () =>
       buildVehicleColumns({
         onChangeStatus: handleChangeStatus,
         changingId: changeStatus.isPending ? (changeStatus.variables?.id ?? null) : null,
+        onRentVehicle: id => showDrawer(id),
       }),
-    [changeStatus.isPending, changeStatus.variables, handleChangeStatus],
+    [changeStatus.isPending, changeStatus.variables?.id, handleChangeStatus, showDrawer],
   )
 
   const table = useReactTable({

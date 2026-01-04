@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Loader2, MoreHorizontal } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,33 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  FuelType,
-  Transmission,
-  VehicleStatus,
-} from "@/features/vehicle/schemas/vehicle-form.schema"
+import { FatButton } from "@/components/ui/fat-button"
+import { VehicleStatus } from "@/features/vehicle/schemas/vehicle-form.schema"
+import type { VehicleListItem } from "@/features/vehicle/types"
 
-export type VehicleRow = {
-  id: string
-  brand: string
-  model: string
-  vehicleType: string
-  year: number
-  licensePlate: string
-  vin: string
-  transmission: Transmission
-  fuelType: FuelType
-  status: VehicleStatus | null
-  statusUpdatedAt: string | null
-  statusNote?: string | null
-}
+export type VehicleRow = VehicleListItem
 
 type BuildColumnsOptions = {
   onChangeStatus: (opts: { id: string; status: VehicleStatus }) => void
   changingId?: string | null
+  onRentVehicle: (id: string) => void
 }
 
-function statusVariant(status: VehicleStatus | null | undefined) {
+function statusVariant(status: VehicleRow["status"] | null | undefined) {
   switch (status) {
     case "Available":
       return "default" as const
@@ -54,13 +39,14 @@ function statusVariant(status: VehicleStatus | null | undefined) {
   }
 }
 
-function statusLabel(status: VehicleStatus | null | undefined) {
+function statusLabel(status: VehicleRow["status"] | null | undefined) {
   return status ?? "Unknown"
 }
 
 export const buildVehicleColumns = ({
   onChangeStatus,
   changingId,
+  onRentVehicle,
 }: BuildColumnsOptions): ColumnDef<VehicleRow>[] => [
   {
     accessorKey: "licensePlate",
@@ -122,46 +108,49 @@ export const buildVehicleColumns = ({
     enableHiding: false,
     enableSorting: false,
     cell: ({ row }) => (
-      <div data-row-action className="flex justify-end">
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-10 w-10 p-0" aria-label="Row actions">
-              {changingId === row.original.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <MoreHorizontal />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[200px]">
-            <DropdownMenuLabel>Change status</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
-            >
-              Available
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onChangeStatus({ id: row.original.id, status: "Rented" })}
-            >
-              Rented
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onChangeStatus({ id: row.original.id, status: "Maintenance" })}
-            >
-              Maintenance
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onChangeStatus({ id: row.original.id, status: "Retired" })}
-            >
-              Retired
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-muted-foreground" disabled>
-              VIN: {row.original.vin}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="">
+        <div data-row-action className="flex justify-end gap-3">
+          <FatButton onClick={() => onRentVehicle(row.original.id)}>Rent this vehicle</FatButton>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <FatButton variant="ghost" className=" p-0" aria-label="Row actions">
+                {changingId === row.original.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MoreHorizontal />
+                )}
+              </FatButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+              <DropdownMenuLabel>Change status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Available" })}
+              >
+                Available
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Rented" })}
+              >
+                Rented
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Maintenance" })}
+              >
+                Maintenance
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeStatus({ id: row.original.id, status: "Retired" })}
+              >
+                Retired
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-muted-foreground" disabled>
+                VIN: {row.original.vin}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     ),
   },

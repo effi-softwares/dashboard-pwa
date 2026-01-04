@@ -4,7 +4,7 @@ import { use } from "react"
 
 import { AlertCircle, Loader2 } from "lucide-react"
 
-import { useVehicleById } from "@/features/vehicle/hooks/queries/use-vehicle-queries"
+import { useVehicleById } from "@/features/vehicle/queries/use-vehicle-queries"
 import { IMAGE_ROLES } from "@/lib/contants"
 import type { VehicleImage } from "@/types/vehicle"
 

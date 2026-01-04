@@ -2,6 +2,8 @@
  * API and Hook Response Types
  */
 
+import type { VehicleListItem } from "@/features/vehicle/types"
+
 export interface VehiclesListParams {
   page?: number
   pageSize?: number
@@ -15,17 +17,7 @@ export interface VehiclesListParams {
 }
 
 export interface VehiclesResponse {
-  data: Array<{
-    id: string
-    brand: string
-    model: string
-    year: number
-    licensePlate: string
-    vehicleType: string
-    currentStatus: string
-    fuelType: string
-    transmission: string
-  }>
+  data: VehicleListItem[]
   page: number
   pageSize: number
   total: number

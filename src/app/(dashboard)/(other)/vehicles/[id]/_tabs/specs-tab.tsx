@@ -19,7 +19,7 @@ import { useOnborda } from "onborda"
 
 import SegmentedToggle from "@/components/segmented-toggle"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { useUpdateVehicleSpec } from "@/features/vehicle/hooks/mutations/use-update-vehicle-spec"
+import { useUpdateVehicleSpec } from "@/features/vehicle/mutations/use-update-vehicle-spec"
 import {
   type BaggageCapacityUpdate,
   baggageCapacityUpdateSchema,

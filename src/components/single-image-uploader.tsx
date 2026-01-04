@@ -6,7 +6,7 @@ import { Camera } from "lucide-react"
 
 import { BlobImage } from "@/components/ui/blob-image"
 import { FileUploadWithProgress } from "@/components/ui/file-upload"
-import { useUploadMedia } from "@/features/vehicle/hooks/mutations/use-upload-media"
+import { useUploadMedia } from "@/features/vehicle/mutations/use-upload-media"
 
 export type onUploadCompleteOptions = {
   id: string

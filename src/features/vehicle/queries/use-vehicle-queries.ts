@@ -5,12 +5,15 @@ import { useQuery } from "@tanstack/react-query"
 import type { StatusHistoryEntry, VehicleDetailsResponse, VehicleImage } from "@/types"
 import type { VehiclesListParams, VehiclesResponse } from "@/types/api"
 export function useVehicles(params: VehiclesListParams = {}) {
+  const page = params.page ?? 1
+  const pageSize = params.pageSize ?? 20
+
   return useQuery<VehiclesResponse>({
     queryKey: [
       "vehicles",
       {
-        page: params.page ?? 1,
-        pageSize: params.pageSize ?? 20,
+        page,
+        pageSize,
         search: params.search,
         status: params.status,
         vehicleType: params.vehicleType,
@@ -22,8 +25,8 @@ export function useVehicles(params: VehiclesListParams = {}) {
     ],
     queryFn: async () => {
       const searchParams = new URLSearchParams()
-      if (params.page) searchParams.set("page", String(params.page))
-      if (params.pageSize) searchParams.set("pageSize", String(params.pageSize))
+      searchParams.set("page", String(page))
+      searchParams.set("pageSize", String(pageSize))
       if (params.search) searchParams.set("search", params.search)
       if (params.status) searchParams.set("status", params.status)
       if (params.vehicleType) searchParams.set("vehicleType", params.vehicleType)
@@ -38,6 +41,7 @@ export function useVehicles(params: VehiclesListParams = {}) {
       }
       return response.json()
     },
+    placeholderData: previousData => previousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
