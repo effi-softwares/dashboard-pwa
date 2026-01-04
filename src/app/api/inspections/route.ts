@@ -23,7 +23,8 @@ const createInspectionSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const authUser = await requireAuth()
+    const session = await requireAuth()
+    const authUserId = session.user.id
 
     const body = await request.json()
     const validatedData = createInspectionSchema.parse(body)
@@ -54,7 +55,8 @@ export async function POST(request: Request) {
         seatsStatus: validatedData.seatsStatus || null,
         frontSeatsStatus: validatedData.frontSeatsStatus || null,
         trunkStatus: validatedData.trunkStatus || null,
-        inspectedBy: authUser.id,
+        inspectionTime: new Date(),
+        inspectedBy: authUserId,
         notes: validatedData.notes || null,
       })
       .returning()
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
     const [inspector] = await dbClient
       .select({ name: user.name })
       .from(user)
-      .where(eq(user.id, authUser.id))
+      .where(eq(user.id, authUserId))
 
     return NextResponse.json(
       {

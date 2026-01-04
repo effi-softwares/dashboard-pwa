@@ -1,10 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server"
 
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { z } from "zod"
 
 import { db } from "@/db/db"
-import { bookingsTable, bookingStatusTable, customersTable, vehicleTable } from "@/db/schemas"
+import {
+  bookingsTable,
+  bookingStatusEnum,
+  bookingStatusTable,
+  customersTable,
+  vehicleTable,
+} from "@/db/schemas"
 import { bookingFormSchema } from "@/features/booking/schemas/booking-form.schema"
 import { requireAuth } from "@/lib/auth/get-session"
 
@@ -69,7 +77,12 @@ export async function GET(request: Request) {
     }
 
     if (parsed.status) {
-      filters.push(eq(latestStatus.status, parsed.status))
+      const validStatus = bookingStatusEnum.enumValues.includes(parsed.status as any)
+        ? (parsed.status as (typeof bookingStatusEnum.enumValues)[number])
+        : null
+      if (validStatus) {
+        filters.push(eq(latestStatus.status, validStatus))
+      }
     }
 
     if (parsed.startDate) {
@@ -164,7 +177,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const authUser = await requireAuth()
+    const session = await requireAuth()
+    const authUserId = session.user.id
 
     const body = await request.json()
     const validatedData = bookingFormSchema.parse(body)
@@ -215,7 +229,7 @@ export async function POST(request: Request) {
         .insert(bookingsTable)
         .values({
           vehicleId: validatedData.vehicleId,
-          customerId: authUser.id,
+          customerId: authUserId,
           customerPersonId,
           customerName: validatedData.customerName,
           customerEmail: validatedData.customerEmail,
@@ -234,8 +248,8 @@ export async function POST(request: Request) {
 
       await tx.insert(bookingStatusTable).values({
         bookingId: createdBooking.id,
-        status: "Pending",
-        changedBy: authUser.id,
+        status: "Pending" as (typeof bookingStatusEnum.enumValues)[number],
+        changedBy: authUserId,
         note: "Booking created",
       })
 

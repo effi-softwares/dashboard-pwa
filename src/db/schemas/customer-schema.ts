@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm/relations"
 

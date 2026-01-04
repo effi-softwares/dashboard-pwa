@@ -98,7 +98,13 @@ function OperationsForm({ form }: OperationsFormProps) {
                     </FatInputGroupAddon>
                     <FatInputGroupInput
                       {...field}
-                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toLocaleDateString()
+                          : typeof field.value === "string" && field.value
+                            ? new Date(field.value).toLocaleDateString()
+                            : ""
+                      }
                       type="text"
                       placeholder="Select registration expiry date"
                       readOnly
@@ -155,7 +161,13 @@ function OperationsForm({ form }: OperationsFormProps) {
                     </FatInputGroupAddon>
                     <FatInputGroupInput
                       {...field}
-                      value={field.value ? new Date(field.value).toLocaleDateString() : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toLocaleDateString()
+                          : typeof field.value === "string" && field.value
+                            ? new Date(field.value).toLocaleDateString()
+                            : ""
+                      }
                       type="text"
                       placeholder="Select insurance expiry date"
                       readOnly

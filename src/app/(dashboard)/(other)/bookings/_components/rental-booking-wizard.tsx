@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
@@ -50,7 +51,9 @@ export function RentalBookingWizard({
   const [dailyRate, setDailyRate] = useState<number>(85) // Default rate
 
   // Queries
-  const { data: vehicleData } = useVehicleById(selectedVehicleId)
+  // Guard against accidental non-string values ending up in state (prevents circular JSON errors in query keys)
+  const vehicleIdForQuery = typeof selectedVehicleId === "string" ? selectedVehicleId : null
+  const { data: vehicleData } = useVehicleById(vehicleIdForQuery)
 
   // Mutations
   const createBooking = useCreateBooking()
@@ -104,8 +107,8 @@ export function RentalBookingWizard({
         customerEmail: customerDetails.customerEmail,
         customerPhone: customerDetails.customerPhone,
         driverLicenseNumber: customerDetails.driverLicenseNumber,
-        bookingStartDate,
-        bookingEndDate,
+        bookingStartDate: new Date(bookingStartDate),
+        bookingEndDate: new Date(bookingEndDate),
         dailyRate,
         totalDays,
         totalAmount,
@@ -234,12 +237,12 @@ export function RentalBookingWizard({
       {currentStep === "summary" && vehicleData && (
         <BookingSummaryForm
           vehicle={{
-            id: vehicleData.id,
-            brand: vehicleData.brand,
-            model: vehicleData.model,
-            licensePlate: vehicleData.licensePlate,
-            vehicleType: vehicleData.vehicleType,
-            year: vehicleData.year,
+            id: vehicleData.vehicle.id,
+            brand: vehicleData.vehicle.brand,
+            model: vehicleData.vehicle.model,
+            licensePlate: vehicleData.vehicle.licensePlate,
+            vehicleType: vehicleData.vehicle.vehicleType,
+            year: vehicleData.vehicle.year,
           }}
           customerName={customerDetails?.customerName || ""}
           customerEmail={customerDetails?.customerEmail || ""}

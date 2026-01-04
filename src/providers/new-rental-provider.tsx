@@ -15,7 +15,7 @@ type NewRentalContextType = {
   selectedVehicleId?: string | null
   entryPoint?: RentalEntryPoint
   setIsOpen: (isOpen: boolean) => void
-  showDrawer: (id: string, entryPoint?: RentalEntryPoint) => void
+  showDrawer: (id?: string, entryPoint?: RentalEntryPoint) => void
   showDrawerWithoutVehicle: (entryPoint?: RentalEntryPoint) => void
   hideDrawer: () => void
 }
@@ -35,8 +35,8 @@ function NewRentalProvider({ children }: { children: React.ReactNode }) {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
   const [entryPoint, setEntryPoint] = useState<RentalEntryPoint>("home")
 
-  const showDrawer = useCallback((id: string, ep: RentalEntryPoint = "vehicle-table") => {
-    setSelectedVehicleId(id)
+  const showDrawer = useCallback((id?: string, ep: RentalEntryPoint = "vehicle-table") => {
+    if (id) setSelectedVehicleId(id)
     setEntryPoint(ep)
     setIsOpen(true)
   }, [])

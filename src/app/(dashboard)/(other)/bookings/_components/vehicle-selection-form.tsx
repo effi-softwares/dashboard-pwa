@@ -24,6 +24,7 @@ export function VehicleSelectionForm({
 }: VehicleSelectionFormProps) {
   const [searchInput, setSearchInput] = useState("")
   const [search, setSearch] = useState("")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [statusFilter, setStatusFilter] = useState<string | undefined>("Available")
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 })
 
@@ -94,7 +95,6 @@ export function VehicleSelectionForm({
                 {vehicle.year} • {vehicle.vehicleType}
               </div>
               <div className="text-xs font-mono text-blue-600 mt-2">{vehicle.licensePlate}</div>
-              <div className="text-xs text-muted-foreground mt-1">Seats: {vehicle.seats}</div>
             </button>
           ))}
         </div>

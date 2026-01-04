@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react"
 
 import {
+  flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   SortingState,
@@ -158,7 +159,7 @@ export function BookingsTable() {
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className="py-3">
-                        {cell.renderCell()}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>

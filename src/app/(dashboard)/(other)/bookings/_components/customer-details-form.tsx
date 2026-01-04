@@ -250,7 +250,7 @@ function SuggestionsDropdown({
                     </div>
                   )}
                 </div>
-                <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
+                <CheckCircle className="h-5 w-5 text-blue-600 shrink-0 mt-1" />
               </button>
             ))}
           </div>

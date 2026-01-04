@@ -15,7 +15,8 @@ const statusUpdateSchema = z.object({
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const authUser = await requireAuth()
+    const session = await requireAuth()
+    const authUserId = session.user.id
 
     const { id } = await params
     const body = await request.json()
@@ -35,8 +36,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .insert(bookingStatusTable)
       .values({
         bookingId: id,
-        status,
-        changedBy: authUser.id,
+        status: status as (typeof bookingStatusEnum.enumValues)[number],
+        changedBy: authUserId,
         note: note || null,
       })
       .returning()
